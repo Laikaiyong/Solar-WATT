@@ -14,11 +14,9 @@ class SolarProductServiceController extends Controller
      */
     public function index()
     {
-        // Fetch all products including the related solar_site
-        $products = SolarProductService::with('solarSite')->get(); 
-
+        $products = SolarProductService::with('solarSite')->get();
         return Inertia::render('SolarProductsServices/Index', [
-            'products' => $products
+            'products' => $products->toArray() // Ensure data is converted to array
         ]);
     }
 
@@ -28,10 +26,10 @@ class SolarProductServiceController extends Controller
     public function create()
     {
         // Get all solar construction sites for the dropdown
-        $sites = SolarConstructionSite::all();
+        $solarSites = SolarConstructionSite::all();
 
         return Inertia::render('SolarProductsServices/Create', [
-            'sites' => $sites
+            'solarSites' => $solarSites
         ]);
     }
 
@@ -70,12 +68,11 @@ class SolarProductServiceController extends Controller
      */
     public function edit(string $id)
     {
-        $service = SolarProductService::with('solarSite')->findOrFail($id);
-        $sites = SolarConstructionSite::all(); // Get all sites for the dropdown
-
-        return Inertia::render('SolarProductsServices/Edit', [
-            'service' => $service,
-            'sites' => $sites
+        $product = SolarProductService::findOrFail($id); // Correct model
+        $solarSites = SolarConstructionSite::all(); // Correct model
+        return Inertia::render('SolarProductsServices/Edit', [ // Updated path
+            'product' => $product,
+            'solarSites' => $solarSites
         ]);
     }
 

@@ -7,7 +7,7 @@ interface Product {
     name: string;
     description?: string;
     type: 'Product' | 'Service';
-    price?: number;
+    price?: string; // Change to string based on your data
     availability: string;
     solar_site: {
         id: number;
@@ -16,6 +16,8 @@ interface Product {
 }
 
 export default function Index({ auth, products }: { auth: any, products: Product[] }) {
+    console.log(products); // Debugging
+
     return (
         <AuthenticatedLayout
             user={auth.user}
@@ -83,7 +85,7 @@ export default function Index({ auth, products }: { auth: any, products: Product
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap">
                                                     <div className="text-sm text-gray-500 dark:text-gray-300">
-                                                        {product.price ? `$${product.price.toFixed(2)}` : 'N/A'}
+                                                        {product.price ? `RM${parseFloat(product.price).toFixed(2)}` : 'N/A'}
                                                     </div>
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap">

@@ -1,9 +1,10 @@
 import { useForm } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link } from '@inertiajs/react';
+import { useState } from 'react';
 
 export default function Create({ auth, solarSites }: { auth: any, solarSites: { id: number, name: string }[] }) {
-    const { data, setData, post, errors } = useForm({
+    const { data, setData, post } = useForm({
         name: '',
         description: '',
         type: 'Product', // Default type
@@ -12,9 +13,39 @@ export default function Create({ auth, solarSites }: { auth: any, solarSites: { 
         solar_site_id: '', // Default to empty
     });
 
+    const [formErrors, setFormErrors] = useState<any>({});
+
+    const validate = () => {
+        let isValid = true;
+        const newErrors: any = {};
+
+        if (!data.name) {
+            newErrors.name = 'Name is required.';
+            isValid = false;
+        }
+        if (!data.description) {
+            newErrors.description = 'Description is required.';
+            isValid = false;
+        }
+        if (!data.price || parseFloat(data.price) <= 10) {
+            newErrors.price = !data.price ? 'Price is required.' : 'Price must be greater than 10.';
+            isValid = false;
+        }
+        if (!data.solar_site_id) {
+            newErrors.solar_site_id = 'Solar Site selection is required.';
+            isValid = false;
+        }
+
+        setFormErrors(newErrors);
+        return isValid;
+    };
+
     const submit = (e: React.FormEvent) => {
         e.preventDefault();
-        post('/solar-products-services');
+
+        if (validate()) {
+            post('/solar-products-services');
+        }
     };
 
     return (
@@ -50,7 +81,7 @@ export default function Create({ auth, solarSites }: { auth: any, solarSites: { 
                                         onChange={e => setData('name', e.target.value)}
                                         className="mt-1 block w-full bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                                     />
-                                    {errors.name && <div className="text-red-600 text-sm mt-2">{errors.name}</div>}
+                                    {formErrors.name && <div className="text-red-600 text-sm mt-2">{formErrors.name}</div>}
                                 </div>
 
                                 {/* Description */}
@@ -61,7 +92,7 @@ export default function Create({ auth, solarSites }: { auth: any, solarSites: { 
                                         onChange={e => setData('description', e.target.value)}
                                         className="mt-1 block w-full bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                                     />
-                                    {errors.description && <div className="text-red-600 text-sm mt-2">{errors.description}</div>}
+                                    {formErrors.description && <div className="text-red-600 text-sm mt-2">{formErrors.description}</div>}
                                 </div>
 
                                 {/* Type */}
@@ -75,7 +106,7 @@ export default function Create({ auth, solarSites }: { auth: any, solarSites: { 
                                         <option value="Product">Product</option>
                                         <option value="Service">Service</option>
                                     </select>
-                                    {errors.type && <div className="text-red-600 text-sm mt-2">{errors.type}</div>}
+                                    {formErrors.type && <div className="text-red-600 text-sm mt-2">{formErrors.type}</div>}
                                 </div>
 
                                 {/* Price */}
@@ -88,7 +119,7 @@ export default function Create({ auth, solarSites }: { auth: any, solarSites: { 
                                         onChange={e => setData('price', e.target.value)}
                                         className="mt-1 block w-full bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                                     />
-                                    {errors.price && <div className="text-red-600 text-sm mt-2">{errors.price}</div>}
+                                    {formErrors.price && <div className="text-red-600 text-sm mt-2">{formErrors.price}</div>}
                                 </div>
 
                                 {/* Availability */}
@@ -102,7 +133,7 @@ export default function Create({ auth, solarSites }: { auth: any, solarSites: { 
                                         <option value="In Stock">In Stock</option>
                                         <option value="Out of Stock">Out of Stock</option>
                                     </select>
-                                    {errors.availability && <div className="text-red-600 text-sm mt-2">{errors.availability}</div>}
+                                    {formErrors.availability && <div className="text-red-600 text-sm mt-2">{formErrors.availability}</div>}
                                 </div>
 
                                 {/* Solar Site */}
@@ -118,7 +149,7 @@ export default function Create({ auth, solarSites }: { auth: any, solarSites: { 
                                             <option key={site.id} value={site.id}>{site.name}</option>
                                         ))}
                                     </select>
-                                    {errors.solar_site_id && <div className="text-red-600 text-sm mt-2">{errors.solar_site_id}</div>}
+                                    {formErrors.solar_site_id && <div className="text-red-600 text-sm mt-2">{formErrors.solar_site_id}</div>}
                                 </div>
 
                                 <button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg">
