@@ -1,6 +1,7 @@
 import { useForm } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link } from '@inertiajs/react';
+import React, { useState } from 'react';
 
 interface Product {
     id: number;
@@ -24,7 +25,9 @@ interface EditProps {
 }
 
 export default function Edit({ auth, product, solarSites }: EditProps) {
-    const { data, setData, put, errors } = useForm({
+    const [localErrors, setLocalErrors] = useState<any>({});
+    
+    const { data, setData, put } = useForm({
         name: product.name,
         description: product.description,
         type: product.type,
@@ -33,9 +36,25 @@ export default function Edit({ auth, product, solarSites }: EditProps) {
         solar_site_id: product.solar_site_id,
     });
 
+    const validate = () => {
+        const newErrors: any = {};
+        if (!data.name) newErrors.name = 'Name is required.';
+        if (!data.description) newErrors.description = 'Description is required.';
+        if (!data.type) newErrors.type = 'Type is required.';
+        if (!data.price || data.price <= 10) newErrors.price = 'Price must be greater than 10.';
+        if (!data.availability) newErrors.availability = 'Availability is required.';
+        if (!data.solar_site_id) newErrors.solar_site_id = 'Solar Site is required.';
+
+        setLocalErrors(newErrors);
+
+        return Object.keys(newErrors).length === 0;
+    };
+
     const submit = (e: React.FormEvent) => {
         e.preventDefault();
-        put(`/solar-products-services/${product.id}`);
+        if (validate()) {
+            put(`/solar-products-services/${product.id}`);
+        }
     };
 
     return (
@@ -70,7 +89,7 @@ export default function Edit({ auth, product, solarSites }: EditProps) {
                                         onChange={e => setData('name', e.target.value)}
                                         className="mt-1 block w-full bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                                     />
-                                    {errors.name && <div className="text-red-600 text-sm mt-2">{errors.name}</div>}
+                                    {localErrors.name && <div className="text-red-600 text-sm mt-2">{localErrors.name}</div>}
                                 </div>
 
                                 {/* Description */}
@@ -81,7 +100,7 @@ export default function Edit({ auth, product, solarSites }: EditProps) {
                                         onChange={e => setData('description', e.target.value)}
                                         className="mt-1 block w-full bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                                     />
-                                    {errors.description && <div className="text-red-600 text-sm mt-2">{errors.description}</div>}
+                                    {localErrors.description && <div className="text-red-600 text-sm mt-2">{localErrors.description}</div>}
                                 </div>
 
                                 {/* Type */}
@@ -95,7 +114,7 @@ export default function Edit({ auth, product, solarSites }: EditProps) {
                                         <option value="Product">Product</option>
                                         <option value="Service">Service</option>
                                     </select>
-                                    {errors.type && <div className="text-red-600 text-sm mt-2">{errors.type}</div>}
+                                    {localErrors.type && <div className="text-red-600 text-sm mt-2">{localErrors.type}</div>}
                                 </div>
 
                                 {/* Price */}
@@ -108,7 +127,7 @@ export default function Edit({ auth, product, solarSites }: EditProps) {
                                         onChange={e => setData('price', e.target.valueAsNumber)}
                                         className="mt-1 block w-full bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                                     />
-                                    {errors.price && <div className="text-red-600 text-sm mt-2">{errors.price}</div>}
+                                    {localErrors.price && <div className="text-red-600 text-sm mt-2">{localErrors.price}</div>}
                                 </div>
 
                                 {/* Availability */}
@@ -122,7 +141,7 @@ export default function Edit({ auth, product, solarSites }: EditProps) {
                                         <option value="In Stock">In Stock</option>
                                         <option value="Out of Stock">Out of Stock</option>
                                     </select>
-                                    {errors.availability && <div className="text-red-600 text-sm mt-2">{errors.availability}</div>}
+                                    {localErrors.availability && <div className="text-red-600 text-sm mt-2">{localErrors.availability}</div>}
                                 </div>
 
                                 {/* Solar Site */}
@@ -138,7 +157,7 @@ export default function Edit({ auth, product, solarSites }: EditProps) {
                                             <option key={site.id} value={site.id}>{site.name}</option>
                                         ))}
                                     </select>
-                                    {errors.solar_site_id && <div className="text-red-600 text-sm mt-2">{errors.solar_site_id}</div>}
+                                    {localErrors.solar_site_id && <div className="text-red-600 text-sm mt-2">{localErrors.solar_site_id}</div>}
                                 </div>
 
                                 <button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg">
