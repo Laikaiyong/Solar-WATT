@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('location');
             $table->string('contact_number')->nullable();
             $table->string('email')->nullable();
-            $table->integer('capacity')->nullable(); // Optional, depending on your use case
+            $table->integer('capacity')->nullable();
             $table->string('manager_name')->nullable();
             $table->string('status')->default('Active');
             $table->timestamps();

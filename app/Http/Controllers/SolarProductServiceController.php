@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\SolarProductService;
+use App\Models\SolarConstructionSite;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -13,7 +14,9 @@ class SolarProductServiceController extends Controller
      */
     public function index()
     {
-        $products = SolarProductService::all(); // Fetch all products from the database
+        // Fetch all products including the related solar_site
+        $products = SolarProductService::with('solarSite')->get(); 
+
         return Inertia::render('SolarProductsServices/Index', [
             'products' => $products
         ]);
@@ -24,7 +27,12 @@ class SolarProductServiceController extends Controller
      */
     public function create()
     {
-        return Inertia::render('SolarProductServices/Create');
+        // Get all solar construction sites for the dropdown
+        $sites = SolarConstructionSite::all();
+
+        return Inertia::render('SolarProductsServices/Create', [
+            'sites' => $sites
+        ]);
     }
 
     /**
@@ -35,7 +43,10 @@ class SolarProductServiceController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'price' => 'required|numeric',
+            'type' => 'required|in:Product,Service',
+            'price' => 'nullable|numeric',
+            'availability' => 'required|string',
+            'solar_site_id' => 'nullable|exists:solar_construction_sites,id'
         ]);
 
         SolarProductService::create($request->all());
@@ -48,8 +59,8 @@ class SolarProductServiceController extends Controller
      */
     public function show(string $id)
     {
-        $service = SolarProductService::findOrFail($id);
-        return Inertia::render('SolarProductServices/Show', [
+        $service = SolarProductService::with('solarSite')->findOrFail($id);
+        return Inertia::render('SolarProductsServices/Show', [
             'service' => $service
         ]);
     }
@@ -59,9 +70,12 @@ class SolarProductServiceController extends Controller
      */
     public function edit(string $id)
     {
-        $service = SolarProductService::findOrFail($id);
-        return Inertia::render('SolarProductServices/Edit', [
-            'service' => $service
+        $service = SolarProductService::with('solarSite')->findOrFail($id);
+        $sites = SolarConstructionSite::all(); // Get all sites for the dropdown
+
+        return Inertia::render('SolarProductsServices/Edit', [
+            'service' => $service,
+            'sites' => $sites
         ]);
     }
 
@@ -73,7 +87,10 @@ class SolarProductServiceController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'price' => 'required|numeric',
+            'type' => 'required|in:Product,Service',
+            'price' => 'nullable|numeric',
+            'availability' => 'required|string',
+            'solar_site_id' => 'nullable|exists:solar_construction_sites,id'
         ]);
 
         $service = SolarProductService::findOrFail($id);
@@ -93,4 +110,3 @@ class SolarProductServiceController extends Controller
         return redirect()->route('solar-products-services.index')->with('success', 'Product/Service deleted successfully.');
     }
 }
-

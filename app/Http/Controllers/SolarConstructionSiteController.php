@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\SolarConstructionSite;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class SolarConstructionSiteController extends Controller
 {
@@ -13,7 +14,8 @@ class SolarConstructionSiteController extends Controller
      */
     public function index()
     {
-        $sites = SolarConstructionSite::all(); // Fetch all sites from the database
+        // Fetch all sites from the database
+        $sites = SolarConstructionSite::all(); 
         return Inertia::render('SolarConstructionSites/Index', ['sites' => $sites]);
     }
 
@@ -22,7 +24,7 @@ class SolarConstructionSiteController extends Controller
      */
     public function create()
     {
-        //
+        return Inertia::render('SolarConstructionSites/Create');
     }
 
     /**
@@ -30,7 +32,22 @@ class SolarConstructionSiteController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // Validate the request
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'location' => 'required|string|max:255',
+            'contact_number' => 'nullable|string|max:20',
+            'email' => 'nullable|email|max:255',
+            'capacity' => 'nullable|integer',
+            'manager_name' => 'nullable|string|max:255',
+            'status' => 'required|string|in:Active,Under Construction,Inactive',
+        ]);
+
+        // Create a new SolarConstructionSite
+        SolarConstructionSite::create($validated);
+
+        // Redirect to the index page with success message
+        return redirect()->route('solar-construction-sites.index')->with('success', 'Site created successfully.');
     }
 
     /**
@@ -38,7 +55,8 @@ class SolarConstructionSiteController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $site = SolarConstructionSite::findOrFail($id);
+        return Inertia::render('SolarConstructionSites/Show', ['site' => $site]);
     }
 
     /**
@@ -46,7 +64,8 @@ class SolarConstructionSiteController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $site = SolarConstructionSite::findOrFail($id);
+        return Inertia::render('SolarConstructionSites/Edit', ['site' => $site]);
     }
 
     /**
@@ -54,11 +73,28 @@ class SolarConstructionSiteController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        // Validate the request
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'location' => 'required|string|max:255',
+            'contact_number' => 'nullable|string|max:20',
+            'email' => 'nullable|email|max:255',
+            'capacity' => 'nullable|integer',
+            'manager_name' => 'nullable|string|max:255',
+            'status' => 'required|string|in:Active,Under Construction,Inactive',
+        ]);
+
+        // Find the SolarConstructionSite and update it
+        $site = SolarConstructionSite::findOrFail($id);
+        $site->update($validated);
+
+        // Redirect back with a success message
+        return redirect()->route('solar-construction-sites.index')->with('success', 'Site updated successfully.');
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove the specified resource from storage
+
      */
     public function destroy(string $id)
     {

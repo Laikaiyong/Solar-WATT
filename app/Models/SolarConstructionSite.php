@@ -17,4 +17,15 @@ class SolarConstructionSite extends Model
 
     // If the model does not have timestamps
     public $timestamps = true;
+
+    protected $fillable = [
+        'name',
+        'location',
+        'contact_number',
+        'email',
+        'capacity',
+        'manager_name',
+        'status',
+    ];
+
 }

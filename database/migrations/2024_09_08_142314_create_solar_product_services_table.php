@@ -16,9 +16,9 @@ return new class extends Migration
             $table->string('name');
             $table->text('description')->nullable();
             $table->enum('type', ['Product', 'Service']);
-            $table->decimal('price', 10, 2)->nullable(); // Use decimal for pricing
+            $table->decimal('price', 10, 2)->nullable(); 
             $table->string('availability')->default('In Stock');
-            $table->foreignId('solar_site_id')->constrained('solar_construction_sites')->onDelete('cascade'); // Optional
+            $table->foreignId('solar_site_id')->constrained('solar_construction_sites')->onDelete('cascade'); 
             $table->timestamps();
         });
     }
