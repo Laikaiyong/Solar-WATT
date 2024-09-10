@@ -7,16 +7,15 @@ interface Product {
     name: string;
     description?: string;
     type: 'Product' | 'Service';
-    price?: string; // Change to string based on your data
+    price?: string; 
     availability: string;
     solar_site: {
         id: number;
         name: string;
-    } | null; // Nullable in case there is no associated site
+    } | null; 
 }
 
 export default function Index({ auth, products }: { auth: any, products: Product[] }) {
-    console.log(products); // Debugging
 
     return (
         <AuthenticatedLayout

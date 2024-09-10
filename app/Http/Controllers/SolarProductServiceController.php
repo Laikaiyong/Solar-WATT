@@ -68,9 +68,9 @@ class SolarProductServiceController extends Controller
      */
     public function edit(string $id)
     {
-        $product = SolarProductService::findOrFail($id); // Correct model
-        $solarSites = SolarConstructionSite::all(); // Correct model
-        return Inertia::render('SolarProductsServices/Edit', [ // Updated path
+        $product = SolarProductService::findOrFail($id);
+        $solarSites = SolarConstructionSite::all(); 
+        return Inertia::render('SolarProductsServices/Edit', [
             'product' => $product,
             'solarSites' => $solarSites
         ]);
@@ -101,9 +101,6 @@ class SolarProductServiceController extends Controller
      */
     public function destroy(string $id)
     {
-        $service = SolarProductService::findOrFail($id);
-        $service->delete();
-
-        return redirect()->route('solar-products-services.index')->with('success', 'Product/Service deleted successfully.');
+        
     }
 }
