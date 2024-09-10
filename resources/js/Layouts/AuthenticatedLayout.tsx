@@ -25,6 +25,16 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                                 <NavLink href={route('dashboard')} active={route().current('dashboard')}>
                                     Dashboard
                                 </NavLink>
+                                {/* Link to manage Solar Panel Construction Sites */}
+                                <NavLink href="/solar-construction-sites" active={route().current('solar-construction-sites')}
+                                >
+                                    Construction
+                                </NavLink>
+                                {/* Link to manage Solar Products & Services */}
+                                <NavLink href="/solar-products-services" active={route().current('solar-products-services')}
+                                >
+                                    Products
+                                </NavLink>
                             </div>
                         </div>
 
