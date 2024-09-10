@@ -1,4 +1,4 @@
-import { Link } from '@inertiajs/react';
+import { Link, useForm } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
 
@@ -16,6 +16,17 @@ interface Product {
 }
 
 export default function Index({ auth, products }: { auth: any, products: Product[] }) {
+    // Create a form to handle deletions
+    const { delete: destroy, errors } = useForm();
+
+    // Handle delete request
+    const handleDelete = (id: number) => {
+        if (confirm('Are you sure you want to delete this product/service?')) {
+            destroy(`/solar-products-services/${id}`, {
+                method: 'delete', // Change this to lowercase 'delete'
+            });
+        }
+    };
 
     return (
         <AuthenticatedLayout
@@ -98,12 +109,20 @@ export default function Index({ auth, products }: { auth: any, products: Product
                                                     </div>
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                                    <Link 
-                                                        href={`/solar-products-services/${product.id}/edit`} 
-                                                        className="text-blue-600 dark:text-blue-400 hover:underline"
-                                                    >
-                                                        Edit
-                                                    </Link>
+                                                    <div className="flex items-center space-x-2">
+                                                        <Link 
+                                                            href={`/solar-products-services/${product.id}/edit`} 
+                                                            className="text-blue-600 dark:text-blue-400 hover:underline"
+                                                        >
+                                                            Edit
+                                                        </Link>
+                                                        <button
+                                                            onClick={() => handleDelete(product.id)}
+                                                            className="text-red-600 dark:text-red-400 hover:underline"
+                                                        >
+                                                            Delete
+                                                        </button>
+                                                    </div>
                                                 </td>
                                             </tr>
                                         ))}

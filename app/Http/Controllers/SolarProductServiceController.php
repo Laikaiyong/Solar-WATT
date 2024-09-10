@@ -101,6 +101,13 @@ class SolarProductServiceController extends Controller
      */
     public function destroy(string $id)
     {
-        
+        // Find the SolarProductService by ID
+        $service = SolarProductService::findOrFail($id);
+
+        // Delete the service
+        $service->delete();
+
+        // Redirect back to the index page with a success message
+        return redirect()->route('solar-products-services.index')->with('success', 'Product/Service deleted successfully.');
     }
 }

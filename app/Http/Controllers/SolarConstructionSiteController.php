@@ -93,11 +93,17 @@ class SolarConstructionSiteController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage
-
+     * Remove the specified resource from storage.
      */
     public function destroy(string $id)
     {
-        //
+        // Find the SolarConstructionSite by ID
+        $site = SolarConstructionSite::findOrFail($id);
+
+        // Delete the site
+        $site->delete();
+
+        // Redirect back to the index page with a success message
+        return redirect()->route('solar-construction-sites.index')->with('success', 'Site deleted successfully.');
     }
 }
