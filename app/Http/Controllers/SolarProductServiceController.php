@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\SolarProductService;
 use App\Models\SolarConstructionSite;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
 class SolarProductServiceController extends Controller
@@ -41,15 +44,23 @@ class SolarProductServiceController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'type' => 'required|in:Product,Service',
+            'type' => 'required|string',
             'price' => 'nullable|numeric',
             'availability' => 'required|string',
-            'solar_site_id' => 'nullable|exists:solar_construction_sites,id'
+            'solar_site_id' => 'required|integer',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048', // Validate image
         ]);
 
-        SolarProductService::create($request->all());
+        $data = $request->only(['name', 'description', 'type', 'price', 'availability', 'solar_site_id']);
 
-        return redirect()->route('solar-products-services.index')->with('success', 'Product/Service created successfully.');
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('images', 's3'); // Store image in S3
+            $data['image_path'] = $imagePath; // Save image path
+        }
+
+        SolarProductService::create($data);
+
+        return redirect()->route('solar-products-services.index')->with('success', 'Product created successfully.');
     }
 
     /**
@@ -101,13 +112,15 @@ class SolarProductServiceController extends Controller
      */
     public function destroy(string $id)
     {
-        // Find the SolarProductService by ID
         $service = SolarProductService::findOrFail($id);
 
-        // Delete the service
+        if ($service->image_path) {
+            Storage::disk('s3')->delete($service->image_path);
+        }
+
         $service->delete();
 
-        // Redirect back to the index page with a success message
         return redirect()->route('solar-products-services.index')->with('success', 'Product/Service deleted successfully.');
     }
+
 }
