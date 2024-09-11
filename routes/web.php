@@ -33,6 +33,46 @@ Route::middleware('auth')->group(function () {
     Route::delete('/solar-products-services/{id}', [SolarProductServiceController::class, 'destroy'])->name('solar-products-services.destroy');
 });
 
+// Customer: Browse Solar Products & Services
+Route::middleware('auth')->group(function () {
+    Route::get('/product-list', [SolarProductServiceController::class, 'index'])->name('product-list.index');
+});
+
+// Customer: Order Solar Products & Services
+Route::middleware('auth')->group(function () {
+    Route::resource('orders', OrderController::class);
+});
+// Route::middleware('auth')->group(function () {
+//     Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
+//     Route::get('/orders/create', [OrderController::class, 'create'])->name('orders.create');
+//     Route::get('/orders/{id}', [OrderController::class, 'show'])->name('orders.show');
+//     Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');
+//     Route::post('/orders/{id}/edit', [OrderController::class, 'edit'])->name('orders.edit');
+//     Route::put('/orders/{id}', [OrderController::class, 'update'])->name('orders.update');
+//     Route::delete('/orders/{id}', [OrderController::class, 'destroy'])->name('orders.destroy');
+// });
+
+
+// Customer: Purchase History
+Route::middleware('auth')->group(function () {
+    Route::get('/purchases', [PurchaseController::class, 'index'])->name('purchases.index');
+    Route::get('/purchases/{id}', [PurchaseController::class, 'show'])->name('purchases.show');
+});
+
+// Customer: Feedback and Suggestions
+Route::middleware('auth')->group(function () {
+    Route::resource('feedbacks', FeedbackController::class);
+});
+// Route::middleware('auth')->group(function () {
+//     Route::get('/feedbacks', [FeedbackController::class, 'index'])->name('feedback.index');
+//     Route::post('/feedbacks', [FeedbackController::class, 'store'])->name('feedback.store');
+//     Route::post('/feedbacks/create', [FeedbackController::class, 'create'])->name('feedback.create');
+//     Route::post('/feedbacks/{id}', [FeedbackController::class, 'update'])->name('feedback.update');
+//     Route::post('/feedbacks/{id}/edit', [FeedbackController::class, 'edit'])->name('feedback.edit');
+//     Route::delete('/feedbacks/{id}', [FeedbackController::class, 'destroy'])->name('feedback.destroy');
+// });
+
+
 Route::get('/', function () {
     return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
