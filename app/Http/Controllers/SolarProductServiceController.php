@@ -110,4 +110,16 @@ class SolarProductServiceController extends Controller
         // Redirect back to the index page with a success message
         return redirect()->route('solar-products-services.index')->with('success', 'Product/Service deleted successfully.');
     }
+
+    /**
+     * Display a listing of the solar products and services.
+     */
+    public function browse()
+    {
+        $products = SolarProductService::with('solarSite')->get();
+
+    return Inertia::render('Customer/Products/Index', [
+        'products' => $products->toArray(),
+    ]);
+    }
 }

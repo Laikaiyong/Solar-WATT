@@ -35,7 +35,7 @@ Route::middleware('auth')->group(function () {
 
 // Customer: Browse Solar Products & Services
 Route::middleware('auth')->group(function () {
-    Route::get('/product-list', [SolarProductServiceController::class, 'index'])->name('product-list.index');
+    Route::get('/product-list', [SolarProductServiceController::class, 'browse'])->name('product-list.browse');
 });
 
 // Customer: Order Solar Products & Services
