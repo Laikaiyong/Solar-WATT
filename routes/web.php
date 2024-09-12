@@ -33,6 +33,11 @@ Route::middleware('auth')->group(function () {
     Route::delete('/solar-products-services/{id}', [SolarProductServiceController::class, 'destroy'])->name('solar-products-services.destroy');
 });
 
+// Customer
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\PurchaseController;
+use App\Http\Controllers\FeedbackController;
+
 // Customer: Browse Solar Products & Services
 Route::middleware('auth')->group(function () {
     Route::get('/product-list', [SolarProductServiceController::class, 'browse'])->name('product-list.browse');
@@ -41,6 +46,7 @@ Route::middleware('auth')->group(function () {
 // Customer: Order Solar Products & Services
 Route::middleware('auth')->group(function () {
     Route::resource('orders', OrderController::class);
+    Route::post('/orders/{id}/purchase', [OrderController::class, 'purchase'])->name('orders.purchase');
 });
 // Route::middleware('auth')->group(function () {
 //     Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');

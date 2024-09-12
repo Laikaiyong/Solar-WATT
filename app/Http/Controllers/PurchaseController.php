@@ -18,17 +18,12 @@ class PurchaseController extends Controller
         $purchase = Purchase::findOrFail($id);
         return view('purchases.show', compact('purchase'));
     }
+    
+    // public function destroy($id)
+    // {
+    //     $purchase = Purchase::findOrFail($id);
+    //     $purchase->delete();
 
-    public function store(Request $request)
-    {
-        // Implement the logic to store a new purchase if applicable
-    }
-
-    public function destroy($id)
-    {
-        $purchase = Purchase::findOrFail($id);
-        $purchase->delete();
-
-        return redirect()->route('purchases.index');
-    }
+    //     return redirect()->route('purchases.index');
+    // }
 }
