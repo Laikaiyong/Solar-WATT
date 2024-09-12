@@ -4,64 +4,94 @@ namespace App\Http\Controllers;
 
 use App\Models\Order;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class OrderController extends Controller
 {
+    /**
+     * Display a listing of the orders.
+     */
     public function index()
     {
-        $orders = Order::where('user_id', auth()->id())->get();
-        return view('orders.index', compact('orders'));
+        $orders = Order::with('user')->get();
+        return Inertia::render('Orders/Index', [
+            'orders' => $orders->toArray()
+        ]);
     }
 
+    /**
+     * Show the form for creating a new order.
+     */
     public function create()
     {
-        return view('orders.create');
+        return Inertia::render('Orders/Create');
     }
 
+    /**
+     * Store a newly created order in storage.
+     */
     public function store(Request $request)
     {
         $request->validate([
-            'status' => 'required|string',
+            'status' => 'required|string|max:255',
+            'user_id' => 'required|exists:users,id',
         ]);
 
-        $order = new Order();
-        $order->user_id = auth()->id();
-        $order->status = $request->status;
-        $order->save();
+        Order::create([
+            'status' => $request->status,
+            'user_id' => $request->user_id,
+            'order_date' => now(), // Automatically set the current date
+        ]);
 
-        return redirect()->route('orders.index');
+        return redirect()->route('orders.index')->with('success', 'Order created successfully.');
     }
 
-    public function show($id)
+    /**
+     * Display the specified order.
+     */
+    public function show(string $id)
+    {
+        $order = Order::with('user')->findOrFail($id);
+        return Inertia::render('Orders/Show', [
+            'order' => $order->toArray()
+        ]);
+    }
+
+    /**
+     * Show the form for editing the specified order.
+     */
+    public function edit(string $id)
     {
         $order = Order::findOrFail($id);
-        return view('orders.show', compact('order'));
+        return Inertia::render('Orders/Edit', [
+            'order' => $order->toArray()
+        ]);
     }
 
-    public function edit($id)
-    {
-        $order = Order::findOrFail($id);
-        return view('orders.edit', compact('order'));
-    }
-
-    public function update(Request $request, $id)
+    /**
+     * Update the specified order in storage.
+     */
+    public function update(Request $request, string $id)
     {
         $request->validate([
-            'status' => 'required|string',
+            'status' => 'required|string|max:255',
+            'user_id' => 'required|exists:users,id',
         ]);
 
         $order = Order::findOrFail($id);
-        $order->status = $request->status;
-        $order->save();
+        $order->update($request->all());
 
-        return redirect()->route('orders.index');
+        return redirect()->route('orders.index')->with('success', 'Order updated successfully.');
     }
 
-    public function destroy($id)
+    /**
+     * Remove the specified order from storage.
+     */
+    public function destroy(string $id)
     {
         $order = Order::findOrFail($id);
         $order->delete();
 
-        return redirect()->route('orders.index');
+        return redirect()->route('orders.index')->with('success', 'Order deleted successfully.');
     }
 }
