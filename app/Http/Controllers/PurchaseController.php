@@ -9,8 +9,13 @@ class PurchaseController extends Controller
 {
     public function index()
     {
-        $purchases = Purchase::where('user_id', auth()->id())->get();
-        return view('purchases.index', compact('purchases'));
+        $purchasedItems = PurchasedItem::whereHas('order', function ($query) {
+            $query->where('user_id', auth()->id());
+        })->with('solar_product')->get();
+
+        return Inertia::render('Customer/PurchaseHistory/Index', [
+            'purchasedItems' => $purchasedItems,
+        ]);
     }
 
     public function show($id)
