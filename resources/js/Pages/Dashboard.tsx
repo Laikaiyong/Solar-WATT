@@ -72,7 +72,7 @@ export default function Dashboard({ auth }: PageProps) {
                                 </div>
                                 <div className="mt-2">
                                     <Link
-                                        href="/feedback"
+                                        href="/feedbacks"
                                         className="text-blue-600 dark:text-blue-400 hover:underline"
                                     >
                                         Give Feedback and Suggestions
