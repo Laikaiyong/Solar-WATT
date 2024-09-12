@@ -94,4 +94,43 @@ class OrderController extends Controller
 
         return redirect()->route('orders.index')->with('success', 'Order deleted successfully.');
     }
+
+    /**
+     * Purchase
+     */
+    protected function getOrderProducts($order)
+    {
+        return $order->products->map(function ($product) {
+            return [
+                'id' => $product->id,
+                'quantity' => $product->pivot->quantity,
+                'price' => $product->pivot->price,
+            ];
+        })->toArray();
+    }
+
+    public function purchase($id)
+    {
+        $order = Order::findOrFail($id);
+
+        // Fetch products and quantities for the order
+        $products = $this->getOrderProducts($order);
+
+        DB::transaction(function () use ($order, $products) {
+            foreach ($products as $product) {
+                PurchasedItem::create([
+                    'order_id' => $order->id,
+                    'solar_product_id' => $product['id'],
+                    'quantity' => $product['quantity'],
+                    'price' => $product['price'],
+                ]);
+            }
+            
+            // Optionally, update the order status or other fields
+            $order->status = 'Purchased';
+            $order->save();
+        });
+
+        return redirect()->route('orders.index')->with('success', 'Order purchased successfully.');
+    }
 }
