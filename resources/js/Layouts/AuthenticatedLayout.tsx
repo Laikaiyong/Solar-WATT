@@ -28,6 +28,22 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                                 <NavLink href={route('constructor-quotation')} active={route().current('constructor-quotation')}>
                                     Quotation
                                 </NavLink>
+                                {user.role == "company" ? (
+                                <>
+                                {/* Link to manage Solar Panel Construction Sites */}
+                                <NavLink href="/solar-construction-sites" active={route().current('solar-construction-sites')}
+                                >
+                                    Construction
+                                </NavLink>
+                                {/* Link to manage Solar Products & Services */}
+                                <NavLink href="/solar-products-services" active={route().current('solar-products-services')}
+                                >
+                                    Products
+                                </NavLink>
+                                </>
+                    ) : (
+                        <></>
+                    )}
                             </div>
                         </div>
 
