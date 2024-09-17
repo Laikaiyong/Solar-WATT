@@ -2,6 +2,7 @@ import { Link, useForm } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
 
+const bucketLink = import.meta.env.VITE_S3_BUCKET_LINK || '';
 interface Product {
     id: number;
     name: string;
@@ -115,7 +116,7 @@ export default function Index({ auth, products }: { auth: any, products: Product
                                                 <td className="px-6 py-4 whitespace-nowrap">
                                                     {product.image_path && (
                                                         <img 
-                                                            src={product.image_path}
+                                                            src={bucketLink + product.image_path}
                                                             alt={product.name}
                                                             className="w-20 h-20 object-cover" // Adjust the size as needed
                                                         />
