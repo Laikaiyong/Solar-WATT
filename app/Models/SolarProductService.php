@@ -20,7 +20,8 @@ class SolarProductService extends Model
         'type', 
         'price', 
         'availability', 
-        'solar_site_id'
+        'solar_site_id',
+        'image_path'
     ];
 
     // Define relationship to SolarConstructionSite model
