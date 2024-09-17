@@ -16,7 +16,7 @@ class SolarConstructionSiteController extends Controller
     {
         // Fetch all sites from the database
         $sites = SolarConstructionSite::all(); 
-        return Inertia::render('SolarConstructionSites/Index', ['sites' => $sites]);
+        return Inertia::render('Company/SolarConstructionSites/Index', ['sites' => $sites]);
     }
 
     /**
@@ -24,7 +24,7 @@ class SolarConstructionSiteController extends Controller
      */
     public function create()
     {
-        return Inertia::render('SolarConstructionSites/Create');
+        return Inertia::render('Company/SolarConstructionSites/Create');
     }
 
     /**
@@ -56,7 +56,7 @@ class SolarConstructionSiteController extends Controller
     public function show(string $id)
     {
         $site = SolarConstructionSite::findOrFail($id);
-        return Inertia::render('SolarConstructionSites/Show', ['site' => $site]);
+        return Inertia::render('Company/SolarConstructionSites/Show', ['site' => $site]);
     }
 
     /**
@@ -65,7 +65,7 @@ class SolarConstructionSiteController extends Controller
     public function edit(string $id)
     {
         $site = SolarConstructionSite::findOrFail($id);
-        return Inertia::render('SolarConstructionSites/Edit', ['site' => $site]);
+        return Inertia::render('Company/SolarConstructionSites/Edit', ['site' => $site]);
     }
 
     /**

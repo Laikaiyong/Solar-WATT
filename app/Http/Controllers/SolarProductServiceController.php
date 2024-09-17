@@ -15,7 +15,7 @@ class SolarProductServiceController extends Controller
     public function index()
     {
         $products = SolarProductService::with('solarSite')->get();
-        return Inertia::render('SolarProductsServices/Index', [
+        return Inertia::render('Company/SolarProductsServices/Index', [
             'products' => $products->toArray() // Ensure data is converted to array
         ]);
     }
@@ -28,7 +28,7 @@ class SolarProductServiceController extends Controller
         // Get all solar construction sites for the dropdown
         $solarSites = SolarConstructionSite::all();
 
-        return Inertia::render('SolarProductsServices/Create', [
+        return Inertia::render('Company/SolarProductsServices/Create', [
             'solarSites' => $solarSites
         ]);
     }
@@ -58,7 +58,7 @@ class SolarProductServiceController extends Controller
     public function show(string $id)
     {
         $service = SolarProductService::with('solarSite')->findOrFail($id);
-        return Inertia::render('SolarProductsServices/Show', [
+        return Inertia::render('Company/SolarProductsServices/Show', [
             'service' => $service
         ]);
     }
@@ -70,7 +70,7 @@ class SolarProductServiceController extends Controller
     {
         $product = SolarProductService::findOrFail($id);
         $solarSites = SolarConstructionSite::all(); 
-        return Inertia::render('SolarProductsServices/Edit', [
+        return Inertia::render('Company/SolarProductsServices/Edit', [
             'product' => $product,
             'solarSites' => $solarSites
         ]);
