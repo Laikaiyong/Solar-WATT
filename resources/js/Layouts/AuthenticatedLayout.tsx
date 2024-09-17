@@ -25,6 +25,8 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                                 <NavLink href={route('dashboard')} active={route().current('dashboard')}>
                                     Dashboard
                                 </NavLink>
+                                {user.role == "company" ? (
+                                <>
                                 {/* Link to manage Solar Panel Construction Sites */}
                                 <NavLink href="/solar-construction-sites" active={route().current('solar-construction-sites')}
                                 >
@@ -35,6 +37,10 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                                 >
                                     Products
                                 </NavLink>
+                                </>
+                    ) : (
+                        <></>
+                    )}
                             </div>
                         </div>
 
