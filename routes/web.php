@@ -13,6 +13,8 @@ use App\Http\Controllers\SolarProductServiceController;
 use App\Http\Controllers\QuotationController;
 use App\Http\Controllers\ConstructorProjectController;
 
+use App\Http\Controllers\DeliveryController;
+
 //Constructor Quotation
 Route::resource('quotations', QuotationController::class);
 
@@ -23,6 +25,15 @@ Route::middleware('auth')->group(function () {
 
 Route::middleware('auth')->group(function () {
     Route::resource('constructor-projects', ConstructorProjectController::class);
+});
+
+Route::middleware('auth')->group(function () {
+    Route::get('/delivery', [DeliveryController::class, 'index'])->name('delivery.index');
+    Route::get('/delivery/create', [DeliveryController::class, 'create'])->name('delivery.create');
+    Route::post('/delivery', [DeliveryController::class, 'store'])->name('delivery.store');
+    Route::get('/delivery/{id}/edit', [DeliveryController::class, 'edit'])->name('delivery.edit');
+    Route::put('/delivery/{id}', [DeliveryController::class, 'update'])->name('delivery.update');
+    Route::delete('/delivery/{id}', [DeliveryController::class, 'destroy'])->name('delivery.destroy');
 });
 
 
@@ -108,7 +119,9 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
+    return Inertia::render('Dashboard', [
+
+    ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 
