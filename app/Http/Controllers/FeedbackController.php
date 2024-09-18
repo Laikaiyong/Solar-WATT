@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Feedback;
+use App\Models\Feedbacks;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -14,8 +14,8 @@ class FeedbackController extends Controller
      */
     public function index()
     {
-        $feedbacks = Feedback::with('user')->get();
-        return Inertia::render('Feedbacks/Index', [
+        $feedbacks = Feedbacks::with('user')->get();
+        return Inertia::render('Customer/Feedbacks/Index', [
             'feedbacks' => $feedbacks->toArray(),
         ]);
     }
@@ -26,7 +26,7 @@ class FeedbackController extends Controller
     public function create()
     {
         $users = User::all(); // Get all users if needed
-        return Inertia::render('Feedbacks/Create', [
+        return Inertia::render('Customer/Feedbacks/Create', [
             'users' => $users,
         ]);
     }
@@ -41,7 +41,7 @@ class FeedbackController extends Controller
             'message' => 'required|string',
         ]);
 
-        Feedback::create($request->all());
+        Feedbacks::create($request->all());
 
         return redirect()->route('feedbacks.index')->with('success', 'Feedback created successfully.');
     }
@@ -51,9 +51,9 @@ class FeedbackController extends Controller
      */
     public function show(string $id)
     {
-        $feedback = Feedback::with('user')->findOrFail($id);
-        return Inertia::render('Feedbacks/Show', [
-            'feedback' => $feedback,
+        $feedback = Feedbacks::with('user')->findOrFail($id);
+        return Inertia::render('Customer/Feedbacks/Show', [
+            'feedbacks' => $feedback,
         ]);
     }
 
@@ -62,10 +62,10 @@ class FeedbackController extends Controller
      */
     public function edit(string $id)
     {
-        $feedback = Feedback::findOrFail($id);
+        $feedback = Feedbacks::findOrFail($id);
         $users = User::all(); 
-        return Inertia::render('Feedbacks/Edit', [
-            'feedback' => $feedback,
+        return Inertia::render('Customer/Feedbacks/Edit', [
+            'feedbacks' => $feedback,
             'users' => $users,
         ]);
     }
@@ -80,7 +80,7 @@ class FeedbackController extends Controller
             'message' => 'required|string',
         ]);
 
-        $feedback = Feedback::findOrFail($id);
+        $feedback = Feedbacks::findOrFail($id);
         $feedback->update($request->all());
 
         return redirect()->route('feedbacks.index')->with('success', 'Feedback updated successfully.');
@@ -91,7 +91,7 @@ class FeedbackController extends Controller
      */
     public function destroy(string $id)
     {
-        $feedback = Feedback::findOrFail($id);
+        $feedback = Feedbacks::findOrFail($id);
         $feedback->delete();
 
         return redirect()->route('feedbacks.index')->with('success', 'Feedback deleted successfully.');

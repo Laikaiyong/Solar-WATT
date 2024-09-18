@@ -47,6 +47,7 @@ export default function ProjectList({ auth, projects }: ProjectListProps) {
                                     Create New Project
                                 </Link>
                             </div>
+                            <div className="overflow-x-auto">
                             <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                                 <thead>
                                     <tr>
@@ -81,6 +82,7 @@ export default function ProjectList({ auth, projects }: ProjectListProps) {
                                     ))}
                                 </tbody>
                             </table>
+                            </div>
                             <Link href="/dashboard" className="text-blue-500 hover:text-blue-700 mt-4 inline-block">Back to Dashboard</Link>
                         </div>
                     </div>

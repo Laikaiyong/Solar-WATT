@@ -86,7 +86,7 @@ Route::middleware('auth')->group(function () {
 
 // Customer: Feedback and Suggestions
 Route::middleware('auth')->group(function () {
-    Route::resource('feedbacks', FeedbackController::class);
+    Route::get('feedbacks', [FeedbackController::class, 'index'])->name('feedbacks.index');
 });
 // Route::middleware('auth')->group(function () {
 //     Route::get('/feedbacks', [FeedbackController::class, 'index'])->name('feedback.index');

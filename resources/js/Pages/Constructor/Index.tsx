@@ -49,6 +49,7 @@ export default function QuotationList({ quotations, auth }: QuotationListProps) 
                                     No quotations available.
                                 </div>
                             ) : (
+                                <div className="overflow-x-auto">
                                 <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                                     <thead className="bg-gray-100 dark:bg-gray-700">
                                         <tr>
@@ -84,6 +85,7 @@ export default function QuotationList({ quotations, auth }: QuotationListProps) 
                                         ))}
                                     </tbody>
                                 </table>
+                                </div>
                             )}
 
                             <Link href="/dashboard" className="text-blue-500 hover:text-blue-700 mt-4 inline-block">Back to Dashboard</Link>

@@ -40,23 +40,45 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                                     </>
                                 )}
 
+                                {user.role === 'customer' && (
+                                <>
+                                    <NavLink href={route('product-list.browse')} active={route().current('product-list.browse')}>
+                                        Product                     </NavLink>
+
+                                    <NavLink href={route('purchases.index')} active={route().current('purchases.index')}>
+                                        Purchase
+                                    </NavLink>
+                                    <NavLink href={route('feedbacks.index')} active={route().current('feedbacks.index')}>
+                                        Feedback
+                                    </NavLink>
+
+                                    </>
+                                )}
+
+                                {user.role === 'delivery' && (
+                                <>
+                                    <NavLink href={route('delivery.index')} active={route().current('delivery.index')}>
+                                        Delivery
+                                    </NavLink>
+
+                                    </>
+                                )}
 
 
-                                {user.role == "company" ? (
+
+                                {user.role == "company" && (
                                 <>
                                 {/* Link to manage Solar Panel Construction Sites */}
-                                <NavLink href="/solar-construction-sites" active={route().current('solar-construction-sites')}
+                                <NavLink href={route('solar-construction-sites.index')} active={route().current('solar-construction-sites.index')}
                                 >
                                     Construction
                                 </NavLink>
                                 {/* Link to manage Solar Products & Services */}
-                                <NavLink href="/solar-products-services" active={route().current('solar-products-services')}
+                                <NavLink href={route('solar-products-services.index')} active={route().current('solar-products-services.index')}
                                 >
                                     Products
                                 </NavLink>
                                 </>
-                    ) : (
-                        <></>
                     )}
                             </div>
                         </div>
@@ -130,6 +152,75 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                             Dashboard
                         </ResponsiveNavLink>
                     </div>
+
+
+                    {user.role === 'constructor' && (
+                        <>
+                        <div className="pt-2 pb-3 space-y-1">
+                        <ResponsiveNavLink href={route('constructor-quotation')} active={route().current('constructor-quotation')}>
+                        Quotation
+                        </ResponsiveNavLink>
+                    </div>
+                        <div className="pt-2 pb-3 space-y-1">
+                        <ResponsiveNavLink href={route('constructor-projects.index')} active={route().current('constructor-projects.index')}>
+                        Construction Projects
+                        </ResponsiveNavLink>
+                    </div>
+                            </>
+                        )}
+
+                        {user.role === 'customer' && (
+                        <>
+                        <div className="pt-2 pb-3 space-y-1">
+                        <ResponsiveNavLink href={route('product-list.browse')} active={route().current('product-list.browse')}>
+                        Product   
+                        </ResponsiveNavLink>
+                    </div>
+                        <div className="pt-2 pb-3 space-y-1">
+                        <ResponsiveNavLink href={route('purchases.index')} active={route().current('purchases.index')}>
+                        Purchase  
+                        </ResponsiveNavLink>
+                    </div>
+                        <div className="pt-2 pb-3 space-y-1">
+                        <ResponsiveNavLink href={route('feedbacks.index')} active={route().current('feedbacks.index')}>
+                        Feedback
+                        </ResponsiveNavLink>
+                    </div>
+
+                            </>
+                        )}
+
+                        {user.role === 'delivery' && (
+                        <>
+                        <div className="pt-2 pb-3 space-y-1">
+                        <ResponsiveNavLink href={route('delivery.index')} active={route().current('delivery.index')}>
+                        Delivery
+                        </ResponsiveNavLink>
+                    </div>
+
+                            </>
+                        )}
+
+
+
+                        {user.role == "company" && (
+                        <>
+                        {/* Link to manage Solar Panel Construction Sites */}
+                        <div className="pt-2 pb-3 space-y-1">
+                        <ResponsiveNavLink href={route('solar-construction-sites.index')} active={route().current('solar-construction-sites.index')}
+                        >
+                            Construction
+                        </ResponsiveNavLink>
+                    </div>
+                        <div className="pt-2 pb-3 space-y-1">
+                        <ResponsiveNavLink href={route('solar-products-services.index')} active={route().current('solar-products-services.index')}
+                        >
+                            Products
+                        </ResponsiveNavLink>
+                    </div>
+                        </>
+            )}
+                   
 
                     <div className="pt-4 pb-1 border-t border-gray-200">
                         <div className="px-4">
