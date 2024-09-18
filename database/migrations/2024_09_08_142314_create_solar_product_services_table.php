@@ -18,6 +18,7 @@ return new class extends Migration
             $table->enum('type', ['Product', 'Service']);
             $table->decimal('price', 10, 2)->nullable(); 
             $table->string('availability')->default('In Stock');
+            $table->string('image_path')->nullable(); 
             $table->foreignId('solar_site_id')->constrained('solar_construction_sites')->onDelete('cascade'); 
             $table->timestamps();
         });
@@ -28,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('solar_product_services');
+        Schema::dropIfExists('solar_products_services');
     }
 };

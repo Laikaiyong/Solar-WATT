@@ -2,6 +2,7 @@ import { Link, useForm } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
 
+const bucketLink = import.meta.env.VITE_S3_BUCKET_LINK || '';
 interface Product {
     id: number;
     name: string;
@@ -13,17 +14,18 @@ interface Product {
         id: number;
         name: string;
     } | null; 
+    image_path?: string;
 }
 
 export default function Index({ auth, products }: { auth: any, products: Product[] }) {
     // Create a form to handle deletions
-    const { delete: destroy, errors } = useForm();
+    const { delete: destroy } = useForm();
 
     // Handle delete request
     const handleDelete = (id: number) => {
         if (confirm('Are you sure you want to delete this product/service?')) {
             destroy(`/solar-products-services/${id}`, {
-                method: 'delete', // Change this to lowercase 'delete'
+                method: 'delete',
             });
         }
     };
@@ -72,6 +74,9 @@ export default function Index({ auth, products }: { auth: any, products: Product
                                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                                                 Site Name
                                             </th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                                Image
+                                            </th>
                                             <th className="px-6 py-3"></th>
                                         </tr>
                                     </thead>
@@ -107,6 +112,15 @@ export default function Index({ auth, products }: { auth: any, products: Product
                                                     <div className="text-sm text-gray-500 dark:text-gray-300">
                                                         {product.solar_site?.name || 'N/A'}
                                                     </div>
+                                                </td>
+                                                <td className="px-6 py-4 whitespace-nowrap">
+                                                    {product.image_path && (
+                                                        <img 
+                                                            src={bucketLink + product.image_path}
+                                                            alt={product.name}
+                                                            className="w-20 h-20 object-cover" // Adjust the size as needed
+                                                        />
+                                                    )}
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                                     <div className="flex items-center space-x-2">

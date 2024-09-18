@@ -2,103 +2,83 @@ import { Link } from "@inertiajs/react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head } from "@inertiajs/react";
 
-interface Product {
+interface PurchasedItem {
     id: number;
-    name: string;
-    description?: string;
-    type: "Product" | "Service";
-    price?: string;
-    availability: string;
-    solar_site: {
-        id: number;
-        name: string;
-    } | null;
+    solar_product: {
+        name: string; // Assuming you have a 'name' field in your 'solar_products_services' table
+    };
+    quantity: number;
+    price: number;
+    order_date: string; // This will be passed if needed for context
 }
 
 export default function Index({
     auth,
-    products,
+    purchasedItems,
 }: {
     auth: any;
-    products: Product[];
+    purchasedItems: PurchasedItem[];
 }) {
     return (
         <AuthenticatedLayout
             user={auth.user}
             header={
                 <h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-                    Solar Products & Services
+                    Purchase History
                 </h2>
             }
         >
-            <Head title="Solar Products & Services" />
+            <Head title="Purchase History" />
 
             <div className="py-10">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                         <div className="p-6 text-gray-900 dark:text-gray-100">
-                            {/* Table to display the products and services */}
+                            {/* Table to display the purchased items */}
                             <div className="overflow-x-auto">
                                 <table className="min-w-full bg-white dark:bg-gray-800 shadow rounded-lg">
                                     <thead>
                                         <tr>
                                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                                Name
+                                                Product
                                             </th>
                                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                                Description
-                                            </th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                                Type
+                                                Quantity
                                             </th>
                                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                                                 Price
                                             </th>
                                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                                Availability
-                                            </th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                                Site Name
+                                                Order Date
                                             </th>
                                         </tr>
                                     </thead>
                                     <tbody className="bg-white dark:bg-gray-700 divide-y divide-gray-200">
-                                        {products.map((product) => (
-                                            <tr key={product.id}>
+                                        {purchasedItems.map((item) => (
+                                            <tr key={item.id}>
                                                 <td className="px-6 py-4 whitespace-nowrap">
                                                     <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                                                        {product.name}
+                                                        {
+                                                            item.solar_product
+                                                                .name
+                                                        }
                                                     </div>
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap">
                                                     <div className="text-sm text-gray-500 dark:text-gray-300">
-                                                        {product.description ||
-                                                            "N/A"}
+                                                        {item.quantity}
                                                     </div>
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap">
                                                     <div className="text-sm text-gray-500 dark:text-gray-300">
-                                                        {product.type}
+                                                        ${item.price.toFixed(2)}
                                                     </div>
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap">
                                                     <div className="text-sm text-gray-500 dark:text-gray-300">
-                                                        {product.price
-                                                            ? `RM${parseFloat(
-                                                                  product.price
-                                                              ).toFixed(2)}`
-                                                            : "N/A"}
-                                                    </div>
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap">
-                                                    <div className="text-sm text-gray-500 dark:text-gray-300">
-                                                        {product.availability}
-                                                    </div>
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap">
-                                                    <div className="text-sm text-gray-500 dark:text-gray-300">
-                                                        {product.solar_site
-                                                            ?.name || "N/A"}
+                                                        {new Date(
+                                                            item.order_date
+                                                        ).toLocaleDateString()}
                                                     </div>
                                                 </td>
                                             </tr>
@@ -107,9 +87,9 @@ export default function Index({
                                 </table>
                             </div>
 
-                            {products.length === 0 && (
+                            {purchasedItems.length === 0 && (
                                 <div className="mt-6 text-center text-gray-500 dark:text-gray-300">
-                                    No products or services available.
+                                    No purchases available.
                                 </div>
                             )}
                         </div>
