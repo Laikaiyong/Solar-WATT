@@ -98,11 +98,29 @@ class SolarProductServiceController extends Controller
             'type' => 'required|in:Product,Service',
             'price' => 'nullable|numeric',
             'availability' => 'required|string',
-            'solar_site_id' => 'nullable|exists:solar_construction_sites,id'
+            'solar_site_id' => 'nullable|exists:solar_construction_sites,id',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
         $service = SolarProductService::findOrFail($id);
-        $service->update($request->all());
+
+        // Get the existing data
+        $data = $request->only(['name', 'description', 'type', 'price', 'availability', 'solar_site_id']);
+
+        // Check if a new image is uploaded
+        if ($request->hasFile('image')) {
+            // Delete the old image from S3
+            if ($service->image_path) {
+                Storage::disk('s3')->delete($service->image_path);
+            }
+
+            // Store the new image in S3 and update the image path
+            $imagePath = $request->file('image')->store('images', 's3');
+            $data['image_path'] = $imagePath;
+        }
+
+        // Update the product with new data
+        $service->update($data);
 
         return redirect()->route('solar-products-services.index')->with('success', 'Product/Service updated successfully.');
     }
