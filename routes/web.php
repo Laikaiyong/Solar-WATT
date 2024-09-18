@@ -9,6 +9,25 @@ use Inertia\Inertia;
 use App\Http\Controllers\SolarConstructionSiteController;
 use App\Http\Controllers\SolarProductServiceController;
 
+//Constructor
+use App\Http\Controllers\QuotationController;
+use App\Http\Controllers\ConstructorProjectController;
+
+//Constructor Quotation
+Route::resource('quotations', QuotationController::class);
+
+Route::middleware('auth')->group(function () {
+    Route::get('/constructor-quotation', [QuotationController::class, 'index'])->name('constructor-quotation');
+});
+
+
+Route::middleware('auth')->group(function () {
+    Route::resource('constructor-projects', ConstructorProjectController::class);
+});
+
+
+
+
 // Solar Panel Construction Sites Routes
 Route::resource('solar-construction-sites', SolarConstructionSiteController::class);
 
@@ -91,6 +110,8 @@ Route::get('/', function () {
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
+
+
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

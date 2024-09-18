@@ -45,4 +45,10 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    //For Constructor Usage (Relationship of Constructor and Quotation)
+    public function quotations()
+    {
+    return $this->hasMany(Quotation::class, 'constructor_id');
+    }
 }

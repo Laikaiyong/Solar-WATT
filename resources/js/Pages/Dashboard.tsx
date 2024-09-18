@@ -80,6 +80,31 @@ export default function Dashboard({ auth }: PageProps) {
                                 </div>
                             </div>
                         </div>
+                      </div>
+                    ) : auth.user.role == "constructor" ? (
+                    <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                        <div className="p-6 text-gray-900 dark:text-gray-100">
+                            <p>Welcome to the Constructor Panel! Here you can manage your quotations and construction projects.</p>
+                            <div className="mt-4">
+                                {/* Link to manage Quotation */}
+                                <Link 
+                                    href="/quotations"
+                                    className="text-blue-600 dark:text-blue-400 hover:underline"
+                                >
+                                    Manage Quotations
+                                </Link>
+                            </div>
+                            <div className="mt-2">
+                                {/* Link to manage Construction Projects */}
+                                <Link 
+                                    href="/constructor-projects"
+                                    className="text-blue-600 dark:text-blue-400 hover:underline"
+                                >
+                                    Manage Construction Projects
+                                </Link>
+                            </div>
+                        </div>
+                    </div>
                     ) : (
                         <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                             <div className="p-6 text-gray-900">
