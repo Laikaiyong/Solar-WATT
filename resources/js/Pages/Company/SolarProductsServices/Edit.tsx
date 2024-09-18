@@ -178,6 +178,7 @@ export default function Edit({ auth, product, solarSites }: EditProps) {
                                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Upload New Image:</label>
                                     <input
                                         type="file"
+                                        accept="image/*"
                                         onChange={handleImageChange}
                                         className="mt-1 block w-full bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                                     />

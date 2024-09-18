@@ -161,20 +161,13 @@ export default function Create({ auth, solarSites }: { auth: any, solarSites: { 
                                 <div className="mb-4">
                                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Image:</label>
                                     <input
+                                        accept="image/*"
                                         type="file"
                                         onChange={e => setData('image', e.target.files ? e.target.files[0] : null)}
                                         className="mt-1 block w-full bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                                     />
                                     {formErrors.image && <div className="text-red-600 text-sm mt-2">{formErrors.image}</div>}
                                 </div>
-
-                                {progress && (
-                                    <div className="w-full bg-gray-200 rounded-full dark:bg-gray-700">
-                                        <div className="bg-blue-600 text-xs font-medium text-blue-100 text-center p-0.5 leading-none rounded-full" style={{ width: `${progress.percentage}%` }}>
-                                            {progress.percentage}%
-                                        </div>
-                                    </div>
-                                )}
 
                                 <button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg">
                                     Create Product/Service
