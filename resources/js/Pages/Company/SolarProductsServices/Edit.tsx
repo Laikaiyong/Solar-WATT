@@ -11,6 +11,7 @@ interface Product {
     price: string;
     availability: string;
     solar_site_id: number;
+    image_path?: string; // The current image path stored in the backend
 }
 
 interface SolarSite {
@@ -27,14 +28,17 @@ interface EditProps {
 export default function Edit({ auth, product, solarSites }: EditProps) {
     const [localErrors, setLocalErrors] = useState<any>({});
     
-    const { data, setData, put } = useForm({
+    const { data, setData, put, errors } = useForm({
         name: product.name,
         description: product.description,
         type: product.type,
         price: parseFloat(product.price),  // Convert price to number
         availability: product.availability,
         solar_site_id: product.solar_site_id,
+        image: null as File | null,  // Add image to the form state
     });
+
+    const [previewImage, setPreviewImage] = useState<string | null>(product.image_path || null); // Image preview
 
     const validate = () => {
         const newErrors: any = {};
@@ -44,16 +48,25 @@ export default function Edit({ auth, product, solarSites }: EditProps) {
         if (!data.price || data.price <= 10) newErrors.price = 'Price must be greater than 10.';
         if (!data.availability) newErrors.availability = 'Availability is required.';
         if (!data.solar_site_id) newErrors.solar_site_id = 'Solar Site is required.';
-
+        
         setLocalErrors(newErrors);
 
         return Object.keys(newErrors).length === 0;
     };
 
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            setData('image', e.target.files[0]); // Update form data with the selected file
+            setPreviewImage(URL.createObjectURL(e.target.files[0])); // Set image preview
+        }
+    };
+
     const submit = (e: React.FormEvent) => {
         e.preventDefault();
         if (validate()) {
-            put(`/solar-products-services/${product.id}`);
+            put(`/solar-products-services/${product.id}`, {
+                forceFormData: true, // Ensures the image file is included in the FormData
+            });
         }
     };
 
@@ -158,6 +171,23 @@ export default function Edit({ auth, product, solarSites }: EditProps) {
                                         ))}
                                     </select>
                                     {localErrors.solar_site_id && <div className="text-red-600 text-sm mt-2">{localErrors.solar_site_id}</div>}
+                                </div>
+
+                                {/* Image Upload */}
+                                <div className="mb-4">
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Upload New Image:</label>
+                                    <input
+                                        type="file"
+                                        onChange={handleImageChange}
+                                        className="mt-1 block w-full bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                    />
+                                    {previewImage && (
+                                        <div className="mt-4">
+                                            <p className="text-sm text-gray-600">Current Image:</p>
+                                            <img src={previewImage} alt="Current image" className="w-32 h-32 object-cover" />
+                                        </div>
+                                    )}
+                                    {localErrors.image && <div className="text-red-600 text-sm mt-2">{localErrors.image}</div>}
                                 </div>
 
                                 <button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg">
