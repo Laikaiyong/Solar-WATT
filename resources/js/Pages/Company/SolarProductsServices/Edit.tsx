@@ -3,6 +3,8 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link } from '@inertiajs/react';
 import React, { useState } from 'react';
 
+const bucketLink = import.meta.env.VITE_S3_BUCKET_LINK || '';
+
 interface Product {
     id: number;
     name: string;
@@ -38,7 +40,7 @@ export default function Edit({ auth, product, solarSites }: EditProps) {
         image: null as File | null,  // Add image to the form state
     });
 
-    const [previewImage, setPreviewImage] = useState<string | null>(product.image_path || null); // Image preview
+    const [previewImage, setPreviewImage] = useState<string | null>(bucketLink + product.image_path || null); // Image preview
 
     const validate = () => {
         const newErrors: any = {};
