@@ -13,6 +13,7 @@ export default function UpdateProfileInformation({ mustVerifyEmail, status, clas
     const { data, setData, patch, errors, processing, recentlySuccessful } = useForm({
         name: user.name,
         email: user.email,
+        address: user.address
     });
 
     const submit: FormEventHandler = (e) => {
