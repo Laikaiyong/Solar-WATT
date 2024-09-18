@@ -17,7 +17,21 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                         <div className="flex">
                             <div className="shrink-0 flex items-center">
                                 <Link href="/">
-                                    <ApplicationLogo className="block h-9 w-auto fill-current text-gray-800" />
+                                <svg
+                                className="h-7 w-auto text-yellow-500"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                            >
+                                <path
+                                    d="M12 17L3 8.5L12 0L21 8.5L12 17Z"
+                                    fill="currentColor"
+                                />
+                                <path
+                                    d="M12 24L3 15.5L12 7L21 15.5L12 24Z"
+                                    fill="currentColor"
+                                />
+                            </svg>
                                 </Link>
                             </div>
 
