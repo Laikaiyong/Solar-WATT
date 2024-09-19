@@ -51,14 +51,18 @@ Route::middleware('auth')->group(function () {
     Route::resource('order-items', OrderItemController::class); // Manage order items
 
     Route::get('/carts', [CartController::class, 'createOrFetchCart']);
-    Route::post('/carts', [CartController::class, 'store']); // Create a new cart
-    // Route for viewing the cart
+    Route::post('/carts', [CartController::class, 'store']); 
     Route::get('/cart', [CartController::class, 'showCart'])->name('cart.show');
+    Route::delete('/carts/{cart}/clear', [CartController::class, 'clearCart']);
 
-    // Add product to the cart
     Route::post('/cart-items', [CartController::class, 'addToCart'])->name('cart.add');
-    // Get cart items count
     Route::get('/cart-items/count', [CartItemController::class, 'count']);
+    Route::put('/cart-items/{id}', [CartItemController::class, 'update']);
+    Route::delete('/cart-items/{id}', [CartItemController::class, 'destroy']);
+
+    Route::get('/checkout', [CartController::class, 'checkout'])->name('cart.checkout');
+    Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');
+
 });
 
 // Customer: Purchase History

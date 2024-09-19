@@ -111,7 +111,38 @@ class CartController extends Controller
         ]);
     }
 
-    
+    public function checkout()
+    {
+        // Get the authenticated user
+        $user = auth()->user();
+        
+        // Load the cart for the user with its items and the related products
+        $cart = Cart::where('user_id', $user->id)
+                    ->with('items.product') // Ensure product relationship is loaded
+                    ->first();
+
+        // If the cart is empty or doesn't exist, redirect back to the cart page
+        if (!$cart || $cart->items->isEmpty()) {
+            return redirect()->route('cart.index')->with('warning', 'Your cart is empty!');
+        }
+
+        // Render the Inertia checkout page, passing the user, cart, and items
+        return Inertia::render('Customer/Cart/Checkout', [
+            'auth' => [
+                'user' => $user, // Pass the user object properly
+            ],
+            'cart' => $cart,
+            'items' => $cart->items, // Pass cart items for use in the frontend
+        ]);
+    }
+
+    public function clearCart(Cart $cart)
+    {
+        // Remove all items in the cart
+        $cart->items()->delete();
+
+        return response()->json(['message' => 'Cart cleared successfully'], 200);
+    }
 
     // Update the cart (e.g., update cart items or cart details)
     public function update(Request $request, $id)
