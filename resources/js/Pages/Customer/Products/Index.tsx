@@ -4,6 +4,8 @@ import { Head } from "@inertiajs/react";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { AxiosError } from 'axios';
+import { toast, ToastContainer } from 'react-toastify'; // Import Toastify
+import 'react-toastify/dist/ReactToastify.css'; // Import Toastify CSS
 
 interface Product {
     id: number;
@@ -81,7 +83,6 @@ export default function Index({
         }
     };
 
-
     // Function to add a product to the cart
     const addToCart = async (productId: number) => {
         let currentCartId = cartId;
@@ -109,6 +110,16 @@ export default function Index({
 
             console.log('Item added to cart:', response.data);
             setCartItems(cartItems + 1); // Increment cart items count
+
+            // Show success message using Toast
+            toast.success('Item added to cart successfully!', {
+                position: "top-right",
+                autoClose: 3000, // Auto closes after 3 seconds
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+            });
         } catch (error) {
             // Check if the error is an AxiosError
             if (error instanceof AxiosError) {
@@ -120,7 +131,6 @@ export default function Index({
             }
         }
     };
-
 
     return (
         <AuthenticatedLayout
@@ -135,12 +145,11 @@ export default function Index({
                     <Link href="/cart" className="text-sm text-blue-500 hover:text-blue-700">
                         View Cart ({cartItems})
                     </Link>
-
                 </div>
             }
         >
             <Head title="Solar Products & Services" />
-
+            <ToastContainer /> {/* Add ToastContainer to show toast notifications */}
             <div className="py-10">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">

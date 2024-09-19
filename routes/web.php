@@ -52,6 +52,8 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/carts', [CartController::class, 'createOrFetchCart']);
     Route::post('/carts', [CartController::class, 'store']); // Create a new cart
+    // Route for viewing the cart
+    Route::get('/cart', [CartController::class, 'showCart'])->name('cart.show');
 
     // Add product to the cart
     Route::post('/cart-items', [CartController::class, 'addToCart'])->name('cart.add');

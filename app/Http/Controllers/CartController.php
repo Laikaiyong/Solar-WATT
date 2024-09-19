@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Cart;
 use App\Models\CartItem;
+use Inertia\Inertia;
 use Illuminate\Http\Request;
 
 class CartController extends Controller
@@ -95,12 +96,22 @@ class CartController extends Controller
         return response()->json($cart->load('items.product'), 200);
     }
 
-    // Show specific cart and its items
-    public function show($id)
+    public function showCart()
     {
-        $cart = Cart::with('items.product')->findOrFail($id);
-        return response()->json($cart);
+        $user = auth()->user();
+        $cart = Cart::where('user_id', $user->id)->with('items.product')->first();
+
+        if (!$cart) {
+            $cart = Cart::create(['user_id' => $user->id]);
+        }
+
+        return Inertia::render('Customer/Cart/Index', [ // Adjust this path
+            'cart' => $cart,
+            'items' => $cart->items,  // Pass the cart items to the Inertia page
+        ]);
     }
+
+    
 
     // Update the cart (e.g., update cart items or cart details)
     public function update(Request $request, $id)
