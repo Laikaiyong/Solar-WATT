@@ -19,6 +19,13 @@ class ConstructorProject extends Model
         'constructor_in_charge', 
         'manager_name', 
         'manager_contact_number', 
-        'status'
+        'status',
+        'quotation_id'
     ];
+
+      // Define the relationship to the Quotation model
+      public function quotation()
+      {
+          return $this->belongsTo(Quotation::class, 'quotation_id');
+      }
 }

@@ -24,4 +24,17 @@ class SolarConstructionSite extends Model
         'status',
     ];
 
+    public function quotations()
+    {
+        return $this->hasMany(Quotation::class, 'solar_site_id');
+    }
+
+    public function delete()
+    {
+        // Use the parent delete method to delete the solar site
+        parent::delete();
+
+        // Manually delete associated quotations if not using cascading deletes
+        $this->quotations()->delete();
+    }
 }

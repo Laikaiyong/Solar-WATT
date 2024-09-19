@@ -13,10 +13,12 @@ class Quotation extends Model
 
     protected $fillable = [
         'constructor_id',
+        'solar_site_id',
         'project_name',
         'description',
         'price',
         'duration',
+        'status',
     ];
 
     // Define relationship with User model (constructor)
@@ -24,4 +26,16 @@ class Quotation extends Model
     {
         return $this->belongsTo(User::class, 'constructor_id');
     }
+
+    public function solarSite()
+    {
+        return $this->belongsTo(SolarConstructionSite::class, 'solar_site_id');
+    }
+
+    public function project()
+    {
+        return $this->hasOne(ConstructorProject::class, 'quotation_id');
+    }
+
+
 }

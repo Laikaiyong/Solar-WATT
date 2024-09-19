@@ -18,6 +18,9 @@ Route::resource('quotations', QuotationController::class);
 
 Route::middleware('auth')->group(function () {
     Route::get('/constructor-quotation', [QuotationController::class, 'index'])->name('constructor-quotation');
+    Route::get('/constructor-quotation/all', [QuotationController::class, 'all'])->name('quotations.all');
+    Route::post('/quotations/{id}/approve', [QuotationController::class, 'approve'])->name('quotations.approve');
+    Route::post('/quotations/{id}/reject', [QuotationController::class, 'reject'])->name('quotations.reject');
 });
 
 
@@ -26,7 +29,9 @@ Route::middleware('auth')->group(function () {
 });
 
 
-
+Route::middleware('auth')->group(function () {
+    Route::resource('delivery', ConstructorProjectController::class);
+});
 
 // Solar Panel Construction Sites Routes
 Route::resource('solar-construction-sites', SolarConstructionSiteController::class);
@@ -38,6 +43,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/solar-construction-sites/{id}/edit', [SolarConstructionSiteController::class, 'edit'])->name('solar-construction-sites.edit');
     Route::put('/solar-construction-sites/{id}', [SolarConstructionSiteController::class, 'update'])->name('solar-construction-sites.update');
     Route::delete('/solar-construction-sites/{id}', [SolarConstructionSiteController::class, 'destroy'])->name('solar-construction-sites.destroy');
+    Route::get('/all-sites', [SolarConstructionSiteController::class, 'allSites'])->name('solar-construction-sites.all');
+
 });
 
 Route::resource('solar-products-services', SolarProductServiceController::class);

@@ -43,6 +43,14 @@ export default function Dashboard({ auth }: PageProps) {
                                         Manage Solar Products & Services
                                     </Link>
                                 </div>
+                                <div className="mt-2">
+                                    <Link
+                                        href={route('quotations.all')}
+                                        className="text-blue-600 dark:text-blue-400 hover:underline"
+                                    >
+                                        View Construction Quotations
+                                    </Link>
+                                </div>
                             </div>
                         </div>
                     ) : auth.user.role == "customer" ? (
@@ -100,6 +108,15 @@ export default function Dashboard({ auth }: PageProps) {
                                     className="text-blue-600 dark:text-blue-400 hover:underline"
                                 >
                                     Manage Construction Projects
+                                </Link>
+                            </div>
+                            <div className="mt-2">
+                                {/* Link to manage Construction Projects */}
+                                <Link 
+                                    href={route('solar-construction-sites.all')}
+                                    className="text-blue-600 dark:text-blue-400 hover:underline"
+                                >
+                                    View current Available Sites
                                 </Link>
                             </div>
                         </div>

@@ -37,7 +37,10 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                                         Construction Projects
                                     </NavLink>
 
-                                    </>
+                                    <NavLink href={route('solar-construction-sites.all')} active={route().current('solar-construction-sites.all')}>
+                                        Available Sites
+                                    </NavLink>
+                                </>
                                 )}
 
                                 {user.role === 'customer' && (
@@ -77,6 +80,10 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                                 <NavLink href={route('solar-products-services.index')} active={route().current('solar-products-services.index')}
                                 >
                                     Products
+                                </NavLink>
+
+                                <NavLink href={route('quotations.all')} active={route().current('quotations.all')}>
+                                    View Quotations
                                 </NavLink>
                                 </>
                     )}

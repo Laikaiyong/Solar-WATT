@@ -87,7 +87,7 @@ export default function EditQuotation({ auth, quotation }: { auth: any, quotatio
                                     <input
                                         type="text"
                                         value={data.project_name}
-                                        onChange={e => setData('project_name', e.target.value)}
+                                        readOnly
                                         className="mt-1 block w-full bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                                     />
                                     {errors.project_name && <div className="text-red-600 dark:text-red-400 text-sm mt-2">{errors.project_name}</div>}

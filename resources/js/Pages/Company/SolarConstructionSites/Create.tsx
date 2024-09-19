@@ -1,22 +1,62 @@
 import { useForm } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link } from '@inertiajs/react';
+import { useState } from 'react';
 
 export default function Create({ auth }: { auth: any }) {
+
+    const [formErrors, setFormErrors] = useState<any>({});
+    
     const { data, setData, post, errors } = useForm({
         name: '',
         location: '',
         contact_number: '',
-        email: '',
+        email: auth.user.email,
         capacity: '',
-        manager_name: '',
-        status: 'Active',
+        manager_name: auth.user.name,
+        status: 'Pending',
     });
+
+    const validate = () => {
+        let isValid = true;
+        const newErrors: any = {};
+        
+        if (!data.name) {
+            newErrors.name = 'Name is required.';
+            isValid = false;
+        }
+        if (!data.location) {
+            newErrors.location = 'Location is required.';
+            isValid = false;
+        }
+        if (!data.contact_number) {
+            newErrors.contact_number = 'Contact number is required.';
+            isValid = false;
+        } else if (!/^\d+$/.test(data.contact_number)) {
+            newErrors.contact_number = 'Contact number must contain only digits.';
+            isValid = false;
+        } else {
+            setData('contact_number', data.contact_number); // Convert back to string
+        }
+        if (!data.capacity || parseFloat(data.capacity) <= 0) {
+            newErrors.capacity = !data.capacity ? 'Capacity is required.' : 'Capacity must be greater than 0.';
+            isValid = false;
+        } else if (!/^\d+$/.test(data.capacity)) {
+            newErrors.capacity = 'Capacity must contain only digits.';
+            isValid = false;
+        }
+
+        setFormErrors(newErrors);
+        return isValid;
+    };
 
     const submit = (e: React.FormEvent) => {
         e.preventDefault();
-        post('/solar-construction-sites');
+        if (validate()) {
+            post('/solar-construction-sites');
+        }
     };
+
 
     return (
         <AuthenticatedLayout
@@ -51,7 +91,7 @@ export default function Create({ auth }: { auth: any }) {
                                         onChange={e => setData('name', e.target.value)}
                                         className="mt-1 block w-full bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                                     />
-                                    {errors.name && <div className="text-red-600 text-sm mt-2">{errors.name}</div>}
+                                     {formErrors.name && <div className="text-red-600 text-sm mt-2">{formErrors.name}</div>}
                                 </div>
 
                                 {/* Location */}
@@ -63,7 +103,7 @@ export default function Create({ auth }: { auth: any }) {
                                         onChange={e => setData('location', e.target.value)}
                                         className="mt-1 block w-full bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                                     />
-                                    {errors.location && <div className="text-red-600 text-sm mt-2">{errors.location}</div>}
+                                    {formErrors.location && <div className="text-red-600 text-sm mt-2">{formErrors.location}</div>}
                                 </div>
 
                                 {/* Contact Number */}
@@ -75,7 +115,7 @@ export default function Create({ auth }: { auth: any }) {
                                         onChange={e => setData('contact_number', e.target.value)}
                                         className="mt-1 block w-full bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                                     />
-                                    {errors.contact_number && <div className="text-red-600 text-sm mt-2">{errors.contact_number}</div>}
+                                    {formErrors.contact_number && <div className="text-red-600 text-sm mt-2">{formErrors.contact_number}</div>}
                                 </div>
 
                                 {/* Email */}
@@ -83,8 +123,8 @@ export default function Create({ auth }: { auth: any }) {
                                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Email:</label>
                                     <input
                                         type="email"
-                                        value={data.email}
-                                        onChange={e => setData('email', e.target.value)}
+                                        value={data.email} // Set email from form data
+                                        readOnly // Make the field read-only
                                         className="mt-1 block w-full bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                                     />
                                     {errors.email && <div className="text-red-600 text-sm mt-2">{errors.email}</div>}
@@ -99,7 +139,7 @@ export default function Create({ auth }: { auth: any }) {
                                         onChange={e => setData('capacity', e.target.value)}
                                         className="mt-1 block w-full bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                                     />
-                                    {errors.capacity && <div className="text-red-600 text-sm mt-2">{errors.capacity}</div>}
+                                    {formErrors.capacity && <div className="text-red-600 text-sm mt-2">{formErrors.capacity}</div>}
                                 </div>
 
                                 {/* Manager Name */}
@@ -108,7 +148,7 @@ export default function Create({ auth }: { auth: any }) {
                                     <input
                                         type="text"
                                         value={data.manager_name}
-                                        onChange={e => setData('manager_name', e.target.value)}
+                                        readOnly
                                         className="mt-1 block w-full bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                                     />
                                     {errors.manager_name && <div className="text-red-600 text-sm mt-2">{errors.manager_name}</div>}
@@ -122,6 +162,7 @@ export default function Create({ auth }: { auth: any }) {
                                         onChange={e => setData('status', e.target.value)}
                                         className="mt-1 block w-full bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                                     >
+                                        <option value="Pending">Pending</option>
                                         <option value="Active">Active</option>
                                         <option value="Under Construction">Under Construction</option>
                                         <option value="Inactive">Inactive</option>
