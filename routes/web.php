@@ -1,93 +1,69 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SolarConstructionSiteController;
+use App\Http\Controllers\SolarProductServiceController;
+use App\Http\Controllers\QuotationController;
+use App\Http\Controllers\ConstructorProjectController;
+use App\Http\Controllers\DeliveryController;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\PurchaseController;
+use App\Http\Controllers\FeedbackController;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\CartItemController;
+use App\Http\Controllers\OrderItemController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-// Company
-use App\Http\Controllers\SolarConstructionSiteController;
-use App\Http\Controllers\SolarProductServiceController;
-
-//Constructor
-use App\Http\Controllers\QuotationController;
-use App\Http\Controllers\ConstructorProjectController;
-
-use App\Http\Controllers\DeliveryController;
-
-//Constructor Quotation
-Route::resource('quotations', QuotationController::class);
-
+// Constructor Quotation
 Route::middleware('auth')->group(function () {
+    Route::resource('quotations', QuotationController::class);
     Route::get('/constructor-quotation', [QuotationController::class, 'index'])->name('constructor-quotation');
 });
 
-
+// Constructor Projects
 Route::middleware('auth')->group(function () {
     Route::resource('constructor-projects', ConstructorProjectController::class);
 });
 
+// Delivery
 Route::middleware('auth')->group(function () {
-    Route::get('/delivery', [DeliveryController::class, 'index'])->name('delivery.index');
-    Route::get('/delivery/create', [DeliveryController::class, 'create'])->name('delivery.create');
-    Route::post('/delivery', [DeliveryController::class, 'store'])->name('delivery.store');
-    Route::get('/delivery/{id}/edit', [DeliveryController::class, 'edit'])->name('delivery.edit');
-    Route::put('/delivery/{id}', [DeliveryController::class, 'update'])->name('delivery.update');
-    Route::delete('/delivery/{id}', [DeliveryController::class, 'destroy'])->name('delivery.destroy');
+    Route::resource('delivery', DeliveryController::class);
 });
-
-
-
 
 // Solar Panel Construction Sites Routes
-Route::resource('solar-construction-sites', SolarConstructionSiteController::class);
-
 Route::middleware('auth')->group(function () {
-    Route::get('/solar-construction-sites', [SolarConstructionSiteController::class, 'index'])->name('solar-construction-sites.index');
-    Route::get('/solar-construction-sites/create', [SolarConstructionSiteController::class, 'create'])->name('solar-construction-sites.create');
-    Route::post('/solar-construction-sites', [SolarConstructionSiteController::class, 'store'])->name('solar-construction-sites.store');
-    Route::get('/solar-construction-sites/{id}/edit', [SolarConstructionSiteController::class, 'edit'])->name('solar-construction-sites.edit');
-    Route::put('/solar-construction-sites/{id}', [SolarConstructionSiteController::class, 'update'])->name('solar-construction-sites.update');
-    Route::delete('/solar-construction-sites/{id}', [SolarConstructionSiteController::class, 'destroy'])->name('solar-construction-sites.destroy');
+    Route::resource('solar-construction-sites', SolarConstructionSiteController::class);
 });
-
-Route::resource('solar-products-services', SolarProductServiceController::class);
 
 // Solar Products & Services Routes
 Route::middleware('auth')->group(function () {
-    Route::get('/solar-products-services', [SolarProductServiceController::class, 'index'])->name('solar-products-services.index');
-    Route::get('/solar-products-services/create', [SolarProductServiceController::class, 'create'])->name('solar-products-services.create');
-    Route::post('/solar-products-services', [SolarProductServiceController::class, 'store'])->name('solar-products-services.store');
-    Route::get('/solar-products-services/{id}/edit', [SolarProductServiceController::class, 'edit'])->name('solar-products-services.edit');
-    Route::put('/solar-products-services/{id}', [SolarProductServiceController::class, 'update'])->name('solar-products-services.update');
-    Route::delete('/solar-products-services/{id}', [SolarProductServiceController::class, 'destroy'])->name('solar-products-services.destroy');
+    Route::resource('solar-products-services', SolarProductServiceController::class);
+    Route::get('/product-list', [SolarProductServiceController::class, 'browse'])->name('product-list.browse'); // For browsing solar products
 });
 
-// Customer
-use App\Http\Controllers\OrderController;
-use App\Http\Controllers\PurchaseController;
-use App\Http\Controllers\FeedbackController;
-
-// Customer: Browse Solar Products & Services
+// Cart and Order Management
 Route::middleware('auth')->group(function () {
-    Route::get('/product-list', [SolarProductServiceController::class, 'browse'])->name('product-list.browse');
-});
+    Route::resource('carts', CartController::class); // Manage cart
+    Route::resource('cart-items', CartItemController::class); // Manage cart items
+    Route::resource('orders', OrderController::class); // Manage orders
+    Route::resource('order-items', OrderItemController::class); // Manage order items
 
-// Customer: Order Solar Products & Services
-Route::middleware('auth')->group(function () {
-    Route::resource('orders', OrderController::class);
-    Route::post('/orders/{id}/purchase', [OrderController::class, 'purchase'])->name('orders.purchase');
-});
-// Route::middleware('auth')->group(function () {
-//     Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
-//     Route::get('/orders/create', [OrderController::class, 'create'])->name('orders.create');
-//     Route::get('/orders/{id}', [OrderController::class, 'show'])->name('orders.show');
-//     Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');
-//     Route::post('/orders/{id}/edit', [OrderController::class, 'edit'])->name('orders.edit');
-//     Route::put('/orders/{id}', [OrderController::class, 'update'])->name('orders.update');
-//     Route::delete('/orders/{id}', [OrderController::class, 'destroy'])->name('orders.destroy');
-// });
+    Route::get('/carts', [CartController::class, 'createOrFetchCart']);
+    Route::post('/carts', [CartController::class, 'store']); 
+    Route::get('/cart', [CartController::class, 'showCart'])->name('cart.show');
+    Route::delete('/carts/{cart}/clear', [CartController::class, 'clearCart']);
 
+    Route::post('/cart-items', [CartController::class, 'addToCart'])->name('cart.add');
+    Route::get('/cart-items/count', [CartItemController::class, 'count']);
+    Route::put('/cart-items/{id}', [CartItemController::class, 'update']);
+    Route::delete('/cart-items/{id}', [CartItemController::class, 'destroy']);
+
+    Route::get('/checkout', [CartController::class, 'checkout'])->name('cart.checkout');
+    Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');
+
+});
 
 // Customer: Purchase History
 Route::middleware('auth')->group(function () {
@@ -97,18 +73,10 @@ Route::middleware('auth')->group(function () {
 
 // Customer: Feedback and Suggestions
 Route::middleware('auth')->group(function () {
-    Route::get('feedbacks', [FeedbackController::class, 'index'])->name('feedbacks.index');
+    Route::resource('feedbacks', FeedbackController::class); // Manage customer feedback
 });
-// Route::middleware('auth')->group(function () {
-//     Route::get('/feedbacks', [FeedbackController::class, 'index'])->name('feedback.index');
-//     Route::post('/feedbacks', [FeedbackController::class, 'store'])->name('feedback.store');
-//     Route::post('/feedbacks/create', [FeedbackController::class, 'create'])->name('feedback.create');
-//     Route::post('/feedbacks/{id}', [FeedbackController::class, 'update'])->name('feedback.update');
-//     Route::post('/feedbacks/{id}/edit', [FeedbackController::class, 'edit'])->name('feedback.edit');
-//     Route::delete('/feedbacks/{id}', [FeedbackController::class, 'destroy'])->name('feedback.destroy');
-// });
 
-
+// Main Dashboard Route
 Route::get('/', function () {
     return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
@@ -118,18 +86,16 @@ Route::get('/', function () {
     ]);
 });
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard', [
-
-    ]);
-})->middleware(['auth', 'verified'])->name('dashboard');
-
-
-
-Route::middleware('auth')->group(function () {
+// Customer Dashboard
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/dashboard', function () {
+        return Inertia::render('Dashboard');
+    })->name('dashboard');
+    
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+// Include Laravel Auth Routes
 require __DIR__.'/auth.php';
