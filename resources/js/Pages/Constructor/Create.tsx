@@ -1,15 +1,21 @@
 import { useForm } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, Link } from '@inertiajs/react';
-import { useState } from 'react';
+import { Head, Link, usePage } from '@inertiajs/react'; // Add usePage for retrieving query params
+import { useState, useEffect } from 'react';
 
-export default function CreateQuotation({ auth }: { auth: any }) {
-  // Initializing the form with the fields we need
+export default function CreateQuotation({ auth,solar_site_name }: { auth: any, solar_site_name: string }) {
+  const { url } = usePage(); // Get the current URL, which contains the solar_site_id
+  const queryParams = new URLSearchParams(url.split('?')[1]);
+  const solarSiteId = queryParams.get('solar_site_id'); // Extract solar_site_id from query string
+
+  // Initializing the form with the fields we need, including solar_site_id
   const { data, setData, post, processing, errors } = useForm({
-    project_name: '',
+    project_name: solar_site_name || '',
     description: '',
     price: '',
     duration: '',
+    solar_site_id: solarSiteId || '', // Initialize with solar site ID from query string
+    status: 'Pending', // Default status
   });
 
   const [formErrors, setFormErrors] = useState<any>({});
@@ -42,8 +48,9 @@ export default function CreateQuotation({ auth }: { auth: any }) {
       });
     }
   };
+
   return (
-    <AuthenticatedLayout 
+    <AuthenticatedLayout
       user={auth.user}
       header={<h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">Create New Quotation</h2>}
     >
@@ -55,15 +62,15 @@ export default function CreateQuotation({ auth }: { auth: any }) {
           {/* Back Button */}
           <div className="mb-4">
             <Link
-              href="/quotations"
+              href={route('solar-construction-sites.all')}
               className="text-blue-600 dark:text-blue-400 hover:underline"
             >
-              &larr; Back to Quotation List
+              &larr; Back to Available Sites List
             </Link>
           </div>
 
           <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-            <div className="p-6 text-gray-900 dark:text-gray-100">              
+            <div className="p-6 text-gray-900 dark:text-gray-100">
               <form onSubmit={handleSubmit}>
                 {/* Project Name */}
                 <div className="mb-4">
@@ -74,8 +81,7 @@ export default function CreateQuotation({ auth }: { auth: any }) {
                     id="project_name"
                     type="text"
                     value={data.project_name}
-                    onChange={(e) => setData('project_name', e.target.value)}
-                    required
+                    readOnly // Set readOnly attribute
                     className="mt-1 block w-full bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                   />
                   {errors.project_name && <div className="text-red-600 text-sm mt-2">{errors.project_name}</div>}
@@ -111,7 +117,7 @@ export default function CreateQuotation({ auth }: { auth: any }) {
                   />
                   {formErrors.price && <div className="text-red-600 text-sm mt-2">{formErrors.price}</div>}
                 </div>
-  
+
                 {/* Duration */}
                 <div className="mb-4">
                   <label htmlFor="duration" className="block text-sm font-medium text-gray-700 dark:text-gray-300">

@@ -128,8 +128,8 @@ export default function EditProject({ auth, project }: { auth: any, project: Pro
                                     <input
                                         type="text"
                                         value={data.project_name}
-                                        onChange={e => setData('project_name', e.target.value)}
-                                        className="mt-1 block w-full bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                        readOnly
+                                        className="mt-1 block w-full bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-gray-500 dark:text-gray-400"
                                     />
                                     {formErrors.project_name && <div className="text-red-600 dark:text-red-400 text-sm mt-2">{formErrors.project_name}</div>}
                                 </div>
@@ -181,7 +181,7 @@ export default function EditProject({ auth, project }: { auth: any, project: Pro
                                         type="text"
                                         value={data.constructor_in_charge}
                                         readOnly
-                                        className="mt-1 block w-full bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                        className="mt-1 block w-full bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-gray-500 dark:text-gray-400"
                                     />
                                     {formErrors.constructor_in_charge && <div className="text-red-600 dark:text-red-400 text-sm mt-2">{formErrors.constructor_in_charge}</div>}
                                 </div>
@@ -192,8 +192,8 @@ export default function EditProject({ auth, project }: { auth: any, project: Pro
                                     <input
                                         type="text"
                                         value={data.manager_name}
-                                        onChange={e => setData('manager_name', e.target.value)}
-                                        className="mt-1 block w-full bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                        readOnly
+                                        className="mt-1 block w-full bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-gray-500 dark:text-gray-400"
                                     />
                                     {formErrors.manager_name && <div className="text-red-600 dark:text-red-400 text-sm mt-2">{formErrors.manager_name}</div>}
                                 </div>
@@ -204,8 +204,8 @@ export default function EditProject({ auth, project }: { auth: any, project: Pro
                                     <input
                                         type="text"
                                         value={data.manager_contact_number}
-                                        onChange={e => setData('manager_contact_number', e.target.value)}
-                                        className="mt-1 block w-full bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                        readOnly
+                                        className="mt-1 block w-full bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-gray-500 dark:text-gray-400"
                                     />
                                     {formErrors.manager_contact_number && <div className="text-red-600 dark:text-red-400 text-sm mt-2">{formErrors.manager_contact_number}</div>}
                                 </div>
@@ -214,8 +214,7 @@ export default function EditProject({ auth, project }: { auth: any, project: Pro
                                     <button
                                         type="submit"
                                         disabled={processing}
-                                        className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md"
-                                    >
+                                        className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md">
                                         Update Project
                                     </button>
                                 </div>

@@ -3,16 +3,17 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link } from '@inertiajs/react';
 import { useState } from 'react';
 
-export default function CreateProject({ auth }: { auth: any }) {
+export default function CreateProject({ auth, solar_site, quotation_id  }: { auth: any, solar_site: any, quotation_id: number}) {
     const { data, setData, post, errors, processing } = useForm({
-        project_name: '',
+        project_name: solar_site ? solar_site.name : '',
         description: '',
         start_date: '',
         expected_end_date: '',
         status: '',
-        constructor_in_charge: '',
-        manager_name: '',
-        manager_contact_number: '',
+        onstructor_in_charge: auth.user.name,
+        manager_name: solar_site ? solar_site.manager_name : '',
+        manager_contact_number: solar_site ? solar_site.contact_number : '',
+        quotation_id: quotation_id,
     });
 
     const [formErrors, setFormErrors] = useState<any>({});
@@ -142,11 +143,14 @@ export default function CreateProject({ auth }: { auth: any }) {
                                         type="text"
                                         value={data.project_name}
                                         onChange={e => setData('project_name', e.target.value)}
-                                        className="mt-1 block w-full bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                        className="mt-1 block w-full bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-gray-500 dark:text-gray-400"
                                     />
                                     {formErrors.project_name && <div className="text-red-600 dark:text-red-400 text-sm mt-2">{formErrors.project_name}</div>}
                                 </div>
 
+                                 {/* Quotation ID */}
+                                 <input type="hidden" value={data.quotation_id} />
+                                 
                                 {/* Description */}
                                 <div className="mb-4">
                                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Description:</label>
@@ -209,7 +213,7 @@ export default function CreateProject({ auth }: { auth: any }) {
                                         type="text"
                                         value={auth.user.name} // Automatically load current user's name
                                         readOnly // Make the input field not editable
-                                        className="mt-1 block w-full bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                        className="mt-1 block w-full bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-gray-500 dark:text-gray-400"
                                     />
                                 </div>
 
@@ -219,11 +223,12 @@ export default function CreateProject({ auth }: { auth: any }) {
                                     <input
                                         type="text"
                                         value={data.manager_name}
-                                        onChange={e => setData('manager_name', e.target.value)}
-                                        className="mt-1 block w-full bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                        readOnly
+                                        className="mt-1 block w-full bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-gray-500 dark:text-gray-400"
                                     />
                                     {formErrors.manager_name && <div className="text-red-600 dark:text-red-400 text-sm mt-2">{formErrors.manager_name}</div>}
                                 </div>
+
 
                                 {/* Manager Contact */}
                                 <div className="mb-4">
@@ -231,8 +236,8 @@ export default function CreateProject({ auth }: { auth: any }) {
                                     <input
                                         type="text"
                                         value={data.manager_contact_number}
-                                        onChange={e => setData('manager_contact_number', e.target.value)}
-                                        className="mt-1 block w-full bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                        readOnly
+                                        className="mt-1 block w-full bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-gray-500 dark:text-gray-400"
                                     />
                                     {formErrors.manager_contact_number && <div className="text-red-600 dark:text-red-400 text-sm mt-2">{formErrors.manager_contact_number}</div>}
                                 </div>

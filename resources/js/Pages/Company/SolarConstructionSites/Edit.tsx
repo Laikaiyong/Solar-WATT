@@ -132,6 +132,7 @@ export default function Edit({ auth, site }: { auth: any, site: Site }) {
                                         onChange={e => setData('status', e.target.value)}
                                         className="mt-1 block w-full bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                                     >
+                                        <option value="Pending">Pending</option>
                                         <option value="Active">Active</option>
                                         <option value="Under Construction">Under Construction</option>
                                         <option value="Inactive">Inactive</option>

@@ -71,6 +71,9 @@ export default function Authenticated({
                                         >
                                             Construction Projects
                                         </NavLink>
+                                        <NavLink href={route('solar-construction-sites.all')} active={route().current('solar-construction-sites.all')}>
+                                            Available Sites
+                                        </NavLink>
                                     </>
                                 )}
 
@@ -118,31 +121,23 @@ export default function Authenticated({
                                 )}
 
                                 {user.role == "company" && (
-                                    <>
-                                        {/* Link to manage Solar Panel Construction Sites */}
-                                        <NavLink
-                                            href={route(
-                                                "solar-construction-sites.index"
-                                            )}
-                                            active={route().current(
-                                                "solar-construction-sites.index"
-                                            )}
-                                        >
-                                            Construction
-                                        </NavLink>
-                                        {/* Link to manage Solar Products & Services */}
-                                        <NavLink
-                                            href={route(
-                                                "solar-products-services.index"
-                                            )}
-                                            active={route().current(
-                                                "solar-products-services.index"
-                                            )}
-                                        >
-                                            Products
-                                        </NavLink>
-                                    </>
-                                )}
+                                <>
+                                {/* Link to manage Solar Panel Construction Sites */}
+                                <NavLink href={route('solar-construction-sites.index')} active={route().current('solar-construction-sites.index')}
+                                >
+                                    Construction
+                                </NavLink>
+                                {/* Link to manage Solar Products & Services */}
+                                <NavLink href={route('solar-products-services.index')} active={route().current('solar-products-services.index')}
+                                >
+                                    Products
+                                </NavLink>
+
+                                <NavLink href={route('quotations.all')} active={route().current('quotations.all')}>
+                                    View Quotations
+                                </NavLink>
+                                </>
+                    )}
                             </div>
                         </div>
 

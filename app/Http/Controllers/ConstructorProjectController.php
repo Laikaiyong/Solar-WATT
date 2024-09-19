@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\ConstructorProject;
+use App\Models\Quotation;
+use App\Models\SolarConstructionSite;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
@@ -15,10 +17,28 @@ class ConstructorProjectController extends Controller
         return Inertia::render('Constructor/ConstructionProject/Index', ['projects' => $projects]);
     }
 
-    public function create()
+    public function create(Request $request)
     {
+        // Fetch the solar site details based on the solar_site_id from the query string
+        if ($request->has('quotation_id')) {
+            $quotation = Quotation::find($request->quotation_id);
+            
+            // Make sure the quotation exists and has a solar_site_id
+            if ($quotation && $quotation->solar_site_id) {
+                $solarSite = SolarConstructionSite::find($quotation->solar_site_id);
+                
+                // Pass the solar site details to the view, including manager_name and manager_contact_number
+                return Inertia::render('Constructor/ConstructionProject/Create', [
+                    'solar_site' => $solarSite, // Include manager_name and manager_contact_number from the solar site
+                    'quotation_id' => $quotation->id // Pass the quotation_id to the view
+                ]);
+            }
+        }
+    
+        // If no quotation or solar site is found, still load the create view
         return Inertia::render('Constructor/ConstructionProject/Create');
     }
+    
 
     public function store(Request $request)
     {
@@ -30,6 +50,7 @@ class ConstructorProjectController extends Controller
             'manager_name' => 'required|string',
             'manager_contact_number' => 'required|string',
             'status' => 'required|string',
+            'quotation_id' => 'required|exists:constructor_quotations,id',
         ]);
     
         // Automatically set constructor_in_charge
@@ -42,6 +63,7 @@ class ConstructorProjectController extends Controller
             'manager_name' => $request->manager_name,
             'manager_contact_number' => $request->manager_contact_number,
             'status' => $request->status,
+            'quotation_id' => $request->quotation_id,
         ]);
 
         return redirect()->route('constructor-projects.index');
@@ -71,6 +93,22 @@ class ConstructorProjectController extends Controller
 
         // Update the project with the validated data
         $project->update($request->all());
+        $quotation = Quotation::find($project->quotation_id);
+    
+        if ($quotation && $quotation->solar_site_id) {
+            // Retrieve the related SolarConstructionSite
+            $solarSite = SolarConstructionSite::find($quotation->solar_site_id);
+            if ($solarSite) {
+                // Update the solar site status based on the construction project status
+                if ($request->status == 'in_progress') {
+                    $solarSite->status = 'under_construction';
+                } elseif ($request->status == 'completed') {
+                    $solarSite->status = 'active';
+                }
+                // Save the updated solar site status
+                $solarSite->save();
+            }
+        }
 
         return redirect()->route('constructor-projects.index')->with('success', 'Project updated successfully');
     }

@@ -19,6 +19,13 @@ class SolarConstructionSiteController extends Controller
         return Inertia::render('Company/SolarConstructionSites/Index', ['sites' => $sites]);
     }
 
+    public function allSites()
+    {
+        // Fetch all sites from the database
+        $sites = SolarConstructionSite::all(); 
+        return Inertia::render('Company/SolarConstructionSites/Sites', ['sites' => $sites]);
+    }
+
     /**
      * Show the form for creating a new resource.
      */
@@ -40,7 +47,7 @@ class SolarConstructionSiteController extends Controller
             'email' => 'nullable|email|max:255',
             'capacity' => 'nullable|integer',
             'manager_name' => 'nullable|string|max:255',
-            'status' => 'required|string|in:Active,Under Construction,Inactive',
+            'status' => 'required|string|in:Pending,Active,Under Construction,Inactive',
         ]);
 
         // Create a new SolarConstructionSite
@@ -81,7 +88,7 @@ class SolarConstructionSiteController extends Controller
             'email' => 'nullable|email|max:255',
             'capacity' => 'nullable|integer',
             'manager_name' => 'nullable|string|max:255',
-            'status' => 'required|string|in:Active,Under Construction,Inactive',
+            'status' => 'required|string|in:Pending,Active,Under Construction,Inactive',
         ]);
 
         // Find the SolarConstructionSite and update it
