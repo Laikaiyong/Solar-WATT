@@ -1,6 +1,9 @@
-import { Link } from "@inertiajs/react";
+import { Link, useForm } from "@inertiajs/react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head } from "@inertiajs/react";
+import { useState, useEffect } from "react";
+import axios from "axios";
+import { AxiosError } from 'axios';
 
 interface Product {
     id: number;
@@ -13,6 +16,7 @@ interface Product {
         id: number;
         name: string;
     } | null;
+    image_url?: string; // Optional field to handle product images
 }
 
 export default function Index({
@@ -22,13 +26,97 @@ export default function Index({
     auth: any;
     products: Product[];
 }) {
+    const { setData, post, reset } = useForm({
+        product_id: 0,
+        quantity: 1,
+        cart_id: null as number | null, // Initialize cart_id as number or null
+    });
+
+    const [cartItems, setCartItems] = useState<number>(0); // State for tracking the number of items in the cart
+    const [cartId, setCartId] = useState<number | null>(null); // State to store the cart ID
+
+    // Automatically fetch or create the cart when the component mounts
+    useEffect(() => {
+        const initializeCart = async () => {
+            await fetchOrCreateCart();
+        };
+        initializeCart();
+    }, []);
+
+    // Function to fetch or create the cart for the user
+    const fetchOrCreateCart = async (): Promise<number | null> => {
+        try {
+            console.log("Attempting to create or fetch a cart...");
+            const response = await axios.get('/carts'); // Fetch cart
+
+            if (response.data && response.data.id) {
+                console.log("Cart fetched successfully:", response.data);
+                setCartId(response.data.id); // Set the cart ID
+                return response.data.id; // Return the cart ID directly
+            } else {
+                console.error("No cart returned from the server.");
+                return null;
+            }
+        } catch (error) {
+            console.error('Error fetching cart:', error);
+            return null;
+        }
+    };
+
+    // Function to add a product to the cart
+    const addToCart = async (productId: number) => {
+        let currentCartId = cartId;
+
+        // If no cart ID, fetch or create one
+        if (!currentCartId) {
+            currentCartId = await fetchOrCreateCart();
+        }
+
+        // If cart ID is still null, stop execution
+        if (!currentCartId) {
+            console.error('Failed to fetch or create a cart.');
+            return;
+        }
+
+        console.log('Adding product to cart', productId);
+
+        try {
+            // Directly using axios to POST the product to the cart
+            const response = await axios.post('/cart-items', {
+                product_id: productId,
+                quantity: 1,
+                cart_id: currentCartId, // Send the cart_id directly
+            });
+
+            console.log('Item added to cart:', response.data);
+            setCartItems(cartItems + 1); // Increment cart items count
+        } catch (error) {
+            // Check if the error is an AxiosError
+            if (error instanceof AxiosError) {
+                // Access the response data from AxiosError
+                console.error("Failed to add item to cart", error.response?.data);
+            } else {
+                // Handle non-Axios errors
+                console.error("An unexpected error occurred:", error);
+            }
+        }
+    };
+
+
     return (
         <AuthenticatedLayout
             user={auth.user}
             header={
-                <h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-                    Solar Products & Services
-                </h2>
+                <div className="flex justify-between items-center">
+                    <h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+                        Solar Products & Services
+                    </h2>
+
+                    {/* Cart Button */}
+                    <Link href="/cart" className="text-sm text-blue-500 hover:text-blue-700">
+                        View Cart ({cartItems})
+                    </Link>
+                </div>
             }
         >
             <Head title="Solar Products & Services" />
@@ -37,81 +125,59 @@ export default function Index({
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                         <div className="p-6 text-gray-900 dark:text-gray-100">
-                            {/* Table to display the products and services */}
-                            <div className="overflow-x-auto">
-                                <table className="min-w-full bg-white dark:bg-gray-800 shadow rounded-lg">
-                                    <thead>
-                                        <tr>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                                Name
-                                            </th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                                Description
-                                            </th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                                Type
-                                            </th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                                Price
-                                            </th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                                Availability
-                                            </th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                                Site Name
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="bg-white dark:bg-gray-700 divide-y divide-gray-200">
-                                        {products.map((product) => (
-                                            <tr key={product.id}>
-                                                <td className="px-6 py-4 whitespace-nowrap">
-                                                    <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                                                        {product.name}
-                                                    </div>
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap">
-                                                    <div className="text-sm text-gray-500 dark:text-gray-300">
-                                                        {product.description ||
-                                                            "N/A"}
-                                                    </div>
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap">
-                                                    <div className="text-sm text-gray-500 dark:text-gray-300">
-                                                        {product.type}
-                                                    </div>
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap">
-                                                    <div className="text-sm text-gray-500 dark:text-gray-300">
-                                                        {product.price
-                                                            ? `RM${parseFloat(
-                                                                  product.price
-                                                              ).toFixed(2)}`
-                                                            : "N/A"}
-                                                    </div>
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap">
-                                                    <div className="text-sm text-gray-500 dark:text-gray-300">
-                                                        {product.availability}
-                                                    </div>
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap">
-                                                    <div className="text-sm text-gray-500 dark:text-gray-300">
-                                                        {product.solar_site
-                                                            ?.name || "N/A"}
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
-
                             {products.length === 0 && (
                                 <div className="mt-6 text-center text-gray-500 dark:text-gray-300">
                                     No products or services available.
                                 </div>
                             )}
+
+                            {/* Product Grid */}
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+                                {products.map((product) => (
+                                    <div key={product.id} className="border border-gray-300 dark:border-gray-700 rounded-lg overflow-hidden shadow-lg">
+                                        {product.image_url ? (
+                                            <img
+                                                src={product.image_url}
+                                                alt={product.name}
+                                                className="w-full h-48 object-cover"
+                                            />
+                                        ) : (
+                                            <div className="w-full h-48 bg-gray-300 dark:bg-gray-600 flex items-center justify-center">
+                                                <span className="text-gray-500 dark:text-gray-400">No Image Available</span>
+                                            </div>
+                                        )}
+
+                                        <div className="p-4">
+                                            <h3 className="font-semibold text-lg text-gray-900 dark:text-gray-100">
+                                                {product.name}
+                                            </h3>
+                                            <p className="text-sm text-gray-500 dark:text-gray-300 mt-2">
+                                                {product.description || "No description available."}
+                                            </p>
+                                            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                                                <strong>Type:</strong> {product.type}
+                                            </p>
+                                            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                                                <strong>Availability:</strong> {product.availability}
+                                            </p>
+                                            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                                                <strong>Price:</strong> {product.price ? `RM${parseFloat(product.price).toFixed(2)}` : "N/A"}
+                                            </p>
+                                            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                                                <strong>Site Name:</strong> {product.solar_site?.name || "N/A"}
+                                            </p>
+
+                                            {/* Add to Cart Button */}
+                                            <button
+                                                onClick={() => addToCart(product.id)}
+                                                className="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                                            >
+                                                Add to Cart
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                     </div>
                 </div>
