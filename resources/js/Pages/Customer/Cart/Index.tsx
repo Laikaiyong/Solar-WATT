@@ -13,7 +13,7 @@ interface CartItem {
         id: number;
         name: string;
         price: string;
-        image_url?: string; // Optional: Include the product image
+        image_path?: string; // Optional: Include the product image
     };
 }
 
@@ -95,9 +95,9 @@ export default function Cart({ auth, cart, items }: { auth: any; cart: any; item
                                         {cartItems.map((item) => (
                                             <div key={item.id} className="border border-gray-300 dark:border-gray-700 rounded-lg overflow-hidden shadow-lg p-4">
                                                 {/* Product Image */}
-                                                {item.product.image_url ? (
+                                                {item.product.image_path ? (
                                                     <img
-                                                        src={bucketLink + item.product.image_url}
+                                                        src={bucketLink + item.product.image_path}
                                                         alt={item.product.name}
                                                         className="w-full h-48 object-cover mb-4"
                                                     />
