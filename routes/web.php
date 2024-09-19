@@ -66,10 +66,9 @@ Route::middleware('auth')->group(function () {
 
 });
 
-// Customer: Purchase History
+// Customer: Order History
 Route::middleware('auth')->group(function () {
-    Route::get('/purchases', [PurchaseController::class, 'index'])->name('purchases.index');
-    Route::get('/purchases/{id}', [PurchaseController::class, 'show'])->name('purchases.show');
+    Route::get('/order-history', [OrderController::class, 'getUserOrders'])->name('order-history.orders');
 });
 
 // Customer: Feedback and Suggestions

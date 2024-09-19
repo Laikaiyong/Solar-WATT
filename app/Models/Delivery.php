@@ -17,4 +17,9 @@ class Delivery extends Model
         'status',
         'message',
     ];
+
+    public function order()
+    {
+        return $this->belongsTo(Order::class);
+    }
 }
