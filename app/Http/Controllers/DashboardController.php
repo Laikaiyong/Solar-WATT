@@ -113,7 +113,7 @@ class DashboardController extends Controller
             'total' => Delivery::count(),
             'initiated' => Delivery::where('status', 'Initiated')->count(),
             'delivering' => Delivery::where('status', 'Delivering')->count(),
-            'delivered' => Delivery::where('status', 'Delivered')->count(),
+            'delivered' => Delivery::where('status', 'Completed')->count(),
             'recent' => Delivery::with('order')->latest()->take(5)->get(),
         ];
     }
