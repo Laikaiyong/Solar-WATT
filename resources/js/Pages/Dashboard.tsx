@@ -71,10 +71,10 @@ const AnalyticalDashboard  = ({
         <Card className="mb-4">
             <CardHeader>Order Statistics</CardHeader>
             <CardContent>
+                <p>Total: {orders.total}</p>
                 <ResponsiveContainer width="100%" height={300}>
                     <BarChart
                         data={[
-                            { name: "Total", value: orders.total },
                             { name: "Pending", value: orders.pending },
                             { name: "Completed", value: orders.completed },
                             { name: "Cancelled", value: orders.cancelled },
@@ -91,7 +91,6 @@ const AnalyticalDashboard  = ({
                         {/* <Bar dataKey="value" fill="#8884d8" /> */}
                         <Bar dataKey="value">
                             {[
-                                { name: "Total", value: orders.total },
                                 { name: "Pending", value: orders.pending },
                                 { name: "Completed", value: orders.completed },
                                 { name: "Cancelled", value: orders.cancelled },
@@ -141,10 +140,10 @@ const AnalyticalDashboard  = ({
         <Card className="mb-4">
             <CardHeader>Project Statistics</CardHeader>
             <CardContent>
+                <p>Total: {projects.total}</p>
                 <ResponsiveContainer width="100%" height={300}>
                     <BarChart
                         data={[
-                            { name: "Total", value: projects.total },
                             { name: "Pending", value: projects.pending },
                             { name: "In Progress", value: projects.inProgress },
                             { name: "Completed", value: projects.completed },
@@ -154,8 +153,18 @@ const AnalyticalDashboard  = ({
                         <XAxis dataKey="name" />
                         <YAxis />
                         <Tooltip />
-                        <Legend />
-                        <Bar dataKey="value" fill="#82ca9d" />
+                        <Bar dataKey="value">
+                            {[
+                                { name: "Pending", value: projects.pending },
+                                { name: "In Progress", value: projects.inProgress },
+                                { name: "Completed", value: projects.completed },
+                            ].map((entry, index) => (
+                                <Cell
+                                    key={`cell-${index}`}
+                                    fill={COLORS[index % 20]}
+                                />
+                            ))}
+                        </Bar>
                     </BarChart>
                 </ResponsiveContainer>
             </CardContent>
@@ -184,20 +193,31 @@ const AnalyticalDashboard  = ({
         <Card className="mb-4">
             <CardHeader>Delivery Statistics</CardHeader>
             <CardContent>
+                <p>Total: {deliveries.total}</p>
                 <ResponsiveContainer width="100%" height={300}>
                     <BarChart
                         data={[
-                            { name: "Total", value: deliveries.total },
-                            { name: "Pending", value: deliveries.pending },
-                            { name: "Completed", value: deliveries.completed },
+                            { name: "Initiated", value: deliveries.initiated },
+                            { name: "Delivering", value: deliveries.delivering },
+                            { name: "Delivered", value: deliveries.delivered },
                         ]}
                     >
                         <CartesianGrid strokeDasharray="3 3" />
                         <XAxis dataKey="name" />
                         <YAxis />
                         <Tooltip />
-                        <Legend />
-                        <Bar dataKey="value" fill="#ffc658" />
+                        <Bar dataKey="value">
+                            {[
+                                  { name: "Initiated", value: deliveries.initiated },
+                                  { name: "Delivering", value: deliveries.delivering },
+                                  { name: "Delivered", value: deliveries.delivered },
+                            ].map((entry, index) => (
+                                <Cell
+                                    key={`cell-${index}`}
+                                    fill={COLORS[index % 20]}
+                                />
+                            ))}
+                        </Bar>
                     </BarChart>
                 </ResponsiveContainer>
             </CardContent>
@@ -217,13 +237,6 @@ const AnalyticalDashboard  = ({
 
             <div className="py-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8 grid lg:grid-cols-2 grid-cols-1 lg:gap-4">
-                    {renderUserSection()}
-                    {renderOrderSection()}
-                    {renderProductSection()}
-                    {renderProjectSection()}
-                    {renderQuotationSection()}
-                    {renderFeedbackSection()}
-                    {renderDeliverySection()}
                     {userRole === "company" && (
                         <>
                             {renderUserSection()}
