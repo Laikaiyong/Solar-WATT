@@ -9,35 +9,26 @@ class Order extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'user_id',
-        'status',
-        'order_date',
-    ];
+    protected $fillable = ['user_id', 'status', 'total_amount'];
 
-    /**
-     * Get the user that owns the order.
-     */
+    // Define the relationship between Order and Delivery
+    public function delivery()
+    {
+        return $this->hasOne(Delivery::class, 'order_id');
+    }
+    
+    public function items()
+    {
+        return $this->hasMany(OrderItem::class);
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    /**
-     * Get the purchased items for the order.
-     */
-    public function purchasedItems()
+    public function product()
     {
-        return $this->hasMany(PurchasedItem::class);
+        return $this->belongsTo(SolarProductService::class, 'product_id');
     }
-
-    /**
-     * Fetch related products.
-     */
-    public function products()
-    {
-        return $this->belongsToMany(SolarProductService::class, 'order_product')
-                    ->withPivot('quantity', 'price');
-    }
-
 }

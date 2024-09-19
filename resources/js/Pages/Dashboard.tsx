@@ -1,9 +1,229 @@
+import React from "react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head } from "@inertiajs/react";
 import { PageProps } from "@/types";
 import { Link } from "@inertiajs/react";
+import {
+    BarChart,
+    Bar,
+    XAxis,
+    YAxis,
+    CartesianGrid,
+    Tooltip,
+    Legend,
+    ResponsiveContainer,
+    PieChart,
+    Pie,
+    Cell,
+    Rectangle,
+    RadarChart,
+    PolarGrid,
+    PolarAngleAxis,
+    PolarRadiusAxis,
+    Radar,
+} from "recharts";
+import { Card, CardContent, CardHeader } from "@/Components/ui/card";
 
-export default function Dashboard({ auth }: PageProps) {
+const AnalyticalDashboard  = ({
+    auth,
+    users,
+    orders,
+    products,
+    projects,
+    quotations,
+    feedbacks,
+    deliveries,
+    userRole,
+}: PageProps) => {
+    const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
+    const renderUserSection = () => (
+        <Card className="mb-4">
+            <CardHeader>User Statistics</CardHeader>
+            <CardContent>
+                <p>Total Users: {users.total}</p>
+                <ResponsiveContainer width="100%" height={300}>
+                <RadarChart
+                    outerRadius="80%"
+                    data={[
+                        { subject: "Customer", value: users.customers },
+                        { subject: "Companies", value: users.companies },
+                        { subject: "Deliveries", value: users.deliveries },
+                        { subject: "Constructors", value: users.constructors },
+                    ]}
+                >
+                    <PolarGrid />
+                    <PolarAngleAxis dataKey="subject" />
+                    <PolarRadiusAxis  />
+                    <Tooltip />
+                    <Radar
+                        dataKey="value"
+                        stroke="#8884d8"
+                        fill="#8884d8"
+                        fillOpacity={0.6}
+                    />
+                </RadarChart>
+                </ResponsiveContainer>
+            </CardContent>
+        </Card>
+    );
+
+    const renderOrderSection = () => (
+        <Card className="mb-4">
+            <CardHeader>Order Statistics</CardHeader>
+            <CardContent>
+                <p>Total: {orders.total}</p>
+                <ResponsiveContainer width="100%" height={300}>
+                    <BarChart
+                        data={[
+                            { name: "Pending", value: orders.pending },
+                            { name: "Completed", value: orders.completed },
+                            { name: "Cancelled", value: orders.cancelled },
+                        ]}
+                    >
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="name" />
+                        <YAxis />
+                        <Tooltip
+                            formatter={function (total) {
+                                return `${total}`;
+                            }}
+                        />
+                        {/* <Bar dataKey="value" fill="#8884d8" /> */}
+                        <Bar dataKey="value">
+                            {[
+                                { name: "Pending", value: orders.pending },
+                                { name: "Completed", value: orders.completed },
+                                { name: "Cancelled", value: orders.cancelled },
+                            ].map((entry, index) => (
+                                <Cell
+                                    key={`cell-${index}`}
+                                    fill={COLORS[index % 20]}
+                                />
+                            ))}
+                        </Bar>
+                    </BarChart>
+                </ResponsiveContainer>
+            </CardContent>
+        </Card>
+    );
+
+    const renderProductSection = () => (
+        <Card className="mb-4">
+            <CardHeader>Product/Service Statistics</CardHeader>
+            <CardContent>
+                <p>Total Products/Services: {products.total}</p>
+                <ResponsiveContainer width="100%" height={300}>
+                    <PieChart>
+                        <Tooltip />
+                        <Legend />
+                        <Pie
+                            dataKey="value"
+                            data={[
+                                { name: "Products", value: products.products },
+                                { name: "Services", value: products.services },
+                            ]}
+                        >
+                            {[
+                                { name: "Products", value: products.products },
+                                { name: "Services", value: products.services },
+                            ].map((entry, index) => (
+                                <Cell fill={COLORS[index % COLORS.length]} />
+                            ))}
+                        </Pie>
+                    </PieChart>
+                </ResponsiveContainer>
+            </CardContent>
+        </Card>
+    );
+
+    const renderProjectSection = () => (
+        <Card className="mb-4">
+            <CardHeader>Project Statistics</CardHeader>
+            <CardContent>
+                <p>Total: {projects.total}</p>
+                <ResponsiveContainer width="100%" height={300}>
+                    <BarChart
+                        data={[
+                            { name: "Pending", value: projects.pending },
+                            { name: "In Progress", value: projects.inProgress },
+                            { name: "Completed", value: projects.completed },
+                        ]}
+                    >
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="name" />
+                        <YAxis />
+                        <Tooltip />
+                        <Bar dataKey="value">
+                            {[
+                                { name: "Pending", value: projects.pending },
+                                { name: "In Progress", value: projects.inProgress },
+                                { name: "Completed", value: projects.completed },
+                            ].map((entry, index) => (
+                                <Cell
+                                    key={`cell-${index}`}
+                                    fill={COLORS[index % 20]}
+                                />
+                            ))}
+                        </Bar>
+                    </BarChart>
+                </ResponsiveContainer>
+            </CardContent>
+        </Card>
+    );
+
+    const renderQuotationSection = () => (
+        <Card className="mb-4">
+            <CardHeader>Quotation Statistics</CardHeader>
+            <CardContent>
+                <p>Total Quotations: {quotations.total}</p>
+            </CardContent>
+        </Card>
+    );
+
+    const renderFeedbackSection = () => (
+        <Card className="mb-4">
+            <CardHeader>Feedback Statistics</CardHeader>
+            <CardContent>
+                <p>Total Feedbacks: {feedbacks.total}</p>
+            </CardContent>
+        </Card>
+    );
+
+    const renderDeliverySection = () => (
+        <Card className="mb-4">
+            <CardHeader>Delivery Statistics</CardHeader>
+            <CardContent>
+                <p>Total: {deliveries.total}</p>
+                <ResponsiveContainer width="100%" height={300}>
+                    <BarChart
+                        data={[
+                            { name: "Initiated", value: deliveries.initiated },
+                            { name: "Delivering", value: deliveries.delivering },
+                            { name: "Delivered", value: deliveries.delivered },
+                        ]}
+                    >
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="name" />
+                        <YAxis />
+                        <Tooltip />
+                        <Bar dataKey="value">
+                            {[
+                                  { name: "Initiated", value: deliveries.initiated },
+                                  { name: "Delivering", value: deliveries.delivering },
+                                  { name: "Delivered", value: deliveries.delivered },
+                            ].map((entry, index) => (
+                                <Cell
+                                    key={`cell-${index}`}
+                                    fill={COLORS[index % 20]}
+                                />
+                            ))}
+                        </Bar>
+                    </BarChart>
+                </ResponsiveContainer>
+            </CardContent>
+        </Card>
+    );
+
     return (
         <AuthenticatedLayout
             user={auth.user}
@@ -16,120 +236,41 @@ export default function Dashboard({ auth }: PageProps) {
             <Head title="Dashboard" />
 
             <div className="py-12">
-                <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                    {auth.user.role == "company" ? (
-                        <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                            <div className="p-6 text-gray-900 dark:text-gray-100">
-                                <p>
-                                    Welcome to the Company Panel! Here you can
-                                    manage your solar panel projects and
-                                    services.
-                                </p>
-                                <div className="mt-4">
-                                    {/* Link to manage Solar Panel Construction Sites */}
-                                    <Link
-                                        href="/solar-construction-sites"
-                                        className="text-blue-600 dark:text-blue-400 hover:underline"
-                                    >
-                                        Manage Solar Panel Construction Sites
-                                    </Link>
-                                </div>
-                                <div className="mt-2">
-                                    {/* Link to manage Solar Products & Services */}
-                                    <Link
-                                        href="/solar-products-services"
-                                        className="text-blue-600 dark:text-blue-400 hover:underline"
-                                    >
-                                        Manage Solar Products & Services
-                                    </Link>
-                                </div>
-                                <div className="mt-2">
-                                    <Link
-                                        href={route('quotations.all')}
-                                        className="text-blue-600 dark:text-blue-400 hover:underline"
-                                    >
-                                        View Construction Quotations
-                                    </Link>
-                                </div>
-                            </div>
-                        </div>
-                    ) : auth.user.role == "customer" ? (
-                        // Customer Role Panel
-                        <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                            <div className="p-6 text-gray-900 dark:text-gray-100">
-                                <p>
-                                    Welcome to the Customer Panel! Here you can
-                                    view and manage your purchases, give
-                                    feedback, and explore solar products.
-                                </p>
-                                <div className="mt-4">
-                                    <Link
-                                        href="/product-list"
-                                        className="text-blue-600 dark:text-blue-400 hover:underline"
-                                    >
-                                        Browse Solar Products & Services
-                                    </Link>
-                                </div>
-                                <div className="mt-2">
-                                    <Link
-                                        href="/purchases"
-                                        className="text-blue-600 dark:text-blue-400 hover:underline"
-                                    >
-                                        View Purchase History
-                                    </Link>
-                                </div>
-                                <div className="mt-2">
-                                    <Link
-                                        href="/feedbacks"
-                                        className="text-blue-600 dark:text-blue-400 hover:underline"
-                                    >
-                                        Give Feedback and Suggestions
-                                    </Link>
-                                </div>
-                            </div>
-                        </div>
-                    ) : auth.user.role == "constructor" ? (
-                    <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                        <div className="p-6 text-gray-900 dark:text-gray-100">
-                            <p>Welcome to the Constructor Panel! Here you can manage your quotations and construction projects.</p>
-                            <div className="mt-4">
-                                {/* Link to manage Quotation */}
-                                <Link 
-                                    href="/quotations"
-                                    className="text-blue-600 dark:text-blue-400 hover:underline"
-                                >
-                                    Manage Quotations
-                                </Link>
-                            </div>
-                            <div className="mt-2">
-                                {/* Link to manage Construction Projects */}
-                                <Link 
-                                    href="/constructor-projects"
-                                    className="text-blue-600 dark:text-blue-400 hover:underline"
-                                >
-                                    Manage Construction Projects
-                                </Link>
-                            </div>
-                            <div className="mt-2">
-                                {/* Link to manage Construction Projects */}
-                                <Link 
-                                    href={route('solar-construction-sites.all')}
-                                    className="text-blue-600 dark:text-blue-400 hover:underline"
-                                >
-                                    View current Available Sites
-                                </Link>
-                            </div>
-                        </div>
-                    </div>
-                    ) : (
-                        <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                            <div className="p-6 text-gray-900">
-                                You're logged in!
-                            </div>
-                        </div>
+                <div className="max-w-7xl mx-auto sm:px-6 lg:px-8 grid lg:grid-cols-2 grid-cols-1 lg:gap-4">
+                    {userRole === "company" && (
+                        <>
+                            {renderUserSection()}
+                            {renderOrderSection()}
+                            {renderProductSection()}
+                            {renderProjectSection()}
+                            {renderQuotationSection()}
+                            {renderFeedbackSection()}
+                            {renderDeliverySection()}
+                        </>
+                    )}
+                    {userRole === "customer" && (
+                        <>
+                            {renderOrderSection()}
+                            {renderProductSection()}
+                            {renderFeedbackSection()}
+                        </>
+                    )}
+                    {userRole === "delivery" && (
+                        <>
+                            {renderOrderSection()}
+                            {renderDeliverySection()}
+                        </>
+                    )}
+                    {userRole === "constructor" && (
+                        <>
+                            {renderProjectSection()}
+                            {renderQuotationSection()}
+                        </>
                     )}
                 </div>
             </div>
         </AuthenticatedLayout>
     );
-}
+};
+
+export default AnalyticalDashboard;
