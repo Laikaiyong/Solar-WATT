@@ -17,4 +17,10 @@ class Delivery extends Model
         'status',
         'message',
     ];
+
+    // Define the inverse relationship back to Order
+    public function order()
+    {
+        return $this->belongsTo(Order::class);
+    }
 }

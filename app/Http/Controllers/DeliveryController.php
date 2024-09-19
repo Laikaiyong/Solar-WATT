@@ -3,97 +3,88 @@
 namespace App\Http\Controllers;
 
 use App\Models\Delivery;
-use App\Models\User;
+use App\Models\Order;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\UploadedFile;
 use Inertia\Inertia;
 
 class DeliveryController extends Controller
-{
- /**
-     * Display a listing of the resource.
+{ 
+    /**
+     * Display a listing of all orders and their deliveries.
      */
     public function index()
     {
-        $delivery = Delivery::all();
+        // Fetch all orders regardless of their status and include delivery details
+        $orders = Order::with(['items.product', 'user', 'delivery']) // Include delivery data
+            ->get();
+
+        // Pass the orders to the Delivery index page
         return Inertia::render('Delivery/Index', [
-            'delivery' => $delivery->toArray(),
+            'orders' => $orders,
         ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        $users = User::all(); // Get all users if needed
-        return Inertia::render('Delivery/Create', [
-            'users' => $users,
-        ]);
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
+        // Validate the request input
         $request->validate([
-            'order_id' => 'required|string',
-            'title' => 'required|string',
-            'status' => 'required|string',
-            'message' => 'required|string',
+            'order_id' => 'required|exists:orders,id',
+            'status' => 'required|string', // Should be 'Initiated' at creation
+            'title' => 'nullable|string',
+            'message' => 'nullable|string',
+            'image_url' => 'nullable|string',
         ]);
-
-        Delivery::create($request->all());
-
-        return redirect()->route('delivery.index')->with('success', 'Delivery created successfully.');
+    
+        \Log::info('Delivery store request data:', $request->all());
+    
+        // Create the delivery order
+        $delivery = Delivery::create([
+            'order_id' => $request->order_id,
+            'status' => 'Initiated', // Set to 'Initiated'
+            'title' => $request->title,
+            'message' => $request->message,
+            'image_url' => $request->image_url,
+        ]);
+    
+        // Return a success response
+        return response()->json(['message' => 'Delivery order created and order status updated successfully']);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        $delivery = Delivery::findOrFail($id);
-        return Inertia::render('Delivery/Show', [
-            'delivery' => $delivery,
-        ]);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        $delivery = Delivery::findOrFail($id);
-        return Inertia::render('Delivery/Edit', [
-            'delivery' => $delivery
-        ]);
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, string $id)
     {
+        \Log::info('Request data:', $request->all());
+
+        // Validate request data
         $request->validate([
-            'title' => 'required|string',
-            'message' => 'required|string',
+            'status' => 'nullable|string',
+            'title' => 'nullable|string',
+            'message' => 'nullable|string',
+            'image_url' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
         $delivery = Delivery::findOrFail($id);
-        $delivery->update($request->all());
+        $data = $request->only(['status', 'title', 'message']);
 
-        return redirect()->route('delivery.index')->with('success', 'Delivery updated successfully.');
+        // Check if a new image is uploaded
+        if ($request->hasFile('image_url')) {
+            if ($delivery->image_url) {
+                Storage::disk('s3')->delete($delivery->image_url);
+            }
+
+            $imagePath = $request->file('image_url')->store('delivery-images', 's3');
+            $data['image_url'] = $imagePath;
+        }
+
+        $delivery->update($data);
+
+        if ($request->status === 'Completed') {
+            $delivery->order->update(['status' => 'Completed']);
+        }
+
+        return response()->json(['message' => 'Delivery status updated successfully']);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        $delivery = Delivery::findOrFail($id);
-        $delivery->delete();
 
-        return redirect()->route('delivery.index')->with('success', 'Delivery deleted successfully.');
-    }
 }
