@@ -11,15 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('orders', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedBigInteger('user_id'); // Foreign key from users table
+        Schema::table('orders', function (Blueprint $table) {
             $table->enum('status', ['Pending', 'Completed', 'Cancelled'])->default('Pending');
             $table->decimal('total_amount', 10, 2);  // Total order amount
-            $table->timestamps();
 
             // Foreign key constraint
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->unsignedBigInteger('user_id')->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 
@@ -28,6 +25,5 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('orders');
     }
 };

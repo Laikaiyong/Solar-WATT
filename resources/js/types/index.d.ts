@@ -8,7 +8,7 @@ export interface User {
     profile?: string;
 }
 
-export type PageProps<T extends Record<string, unknown> = Record<string, unknown>> = T & {
+export type PageProps<T extends Record<string, any> = Record<string, any>> = T & {
     auth: {
         user: User;
     };
