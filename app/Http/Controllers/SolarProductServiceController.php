@@ -148,8 +148,8 @@ class SolarProductServiceController extends Controller
     {
         $products = SolarProductService::with('solarSite')->get();
 
-    return Inertia::render('Customer/Products/Index', [
-        'products' => $products->toArray(),
-    ]);
+        return Inertia::render('Customer/Products/Index', [
+            'products' => $products->toArray(),
+        ]);
     }
 }

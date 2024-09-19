@@ -5,6 +5,8 @@ import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+const bucketLink = import.meta.env.VITE_S3_BUCKET_LINK || '';
+
 interface OrderItem {
     id: number;
     product: {
@@ -265,7 +267,7 @@ export default function DeliveryManIndex({ auth, orders }: { auth: any; orders: 
                                                         <h5 className="font-semibold">Proof of Delivery:</h5>
                                                         {selectedOrder.delivery.image_url ? (
                                                             <img
-                                                                src={selectedOrder.delivery.image_url}
+                                                                src={bucketLink + selectedOrder.delivery.image_url}
                                                                 alt="Proof of Delivery"
                                                                 className="max-w-full h-auto rounded-md shadow-md"
                                                             />
