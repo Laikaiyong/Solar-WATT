@@ -77,6 +77,16 @@ Route::middleware('auth')->group(function () {
     Route::resource('feedbacks', FeedbackController::class); // Manage customer feedback
 });
 
+// Deliveryman 
+Route::middleware('auth')->group(function () {
+    // Delivery routes for delivery personnel
+    Route::get('/delivery/orders', [DeliveryController::class, 'index'])->name('delivery.orders');
+    Route::post('/delivery', [DeliveryController::class, 'store'])->name('delivery.store');
+    Route::post('/delivery/{id}', [DeliveryController::class, 'update']);
+});
+
+
+
 // Main Dashboard Route
 Route::get('/', function () {
     return Inertia::render('Welcome', [

@@ -7,6 +7,8 @@ import { AxiosError } from 'axios';
 import { toast, ToastContainer } from 'react-toastify'; // Import Toastify
 import 'react-toastify/dist/ReactToastify.css'; // Import Toastify CSS
 
+const bucketLink = import.meta.env.VITE_S3_BUCKET_LINK || '';
+
 interface Product {
     id: number;
     name: string;
@@ -18,7 +20,7 @@ interface Product {
         id: number;
         name: string;
     } | null;
-    image_url?: string; // Optional field to handle product images
+    image_path: string; // Optional field to handle product images
 }
 
 // Define a CartItem interface to represent the structure of a cart item
@@ -164,9 +166,9 @@ export default function Index({
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
                                 {products.map((product) => (
                                     <div key={product.id} className="border border-gray-300 dark:border-gray-700 rounded-lg overflow-hidden shadow-lg">
-                                        {product.image_url ? (
+                                        {product.image_path ? (
                                             <img
-                                                src={product.image_url}
+                                                src={bucketLink + product.image_path}
                                                 alt={product.name}
                                                 className="w-full h-48 object-cover"
                                             />

@@ -1,9 +1,9 @@
-import { useForm } from '@inertiajs/react';
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, Link } from '@inertiajs/react';
-import React, { useState } from 'react';
+import { useForm, } from "@inertiajs/react";
+import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
+import { Head, Link } from "@inertiajs/react";
+import React, { useState, useRef } from "react";
 
-const bucketLink = import.meta.env.VITE_S3_BUCKET_LINK || '';
+const bucketLink = import.meta.env.VITE_S3_BUCKET_LINK || "";
 
 interface Product {
     id: number;
@@ -29,53 +29,73 @@ interface EditProps {
 
 export default function Edit({ auth, product, solarSites }: EditProps) {
     const [localErrors, setLocalErrors] = useState<any>({});
-    
-    const { data, setData, put, errors } = useForm({
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
+    const { data, setData, patch, put, errors } = useForm({
         name: product.name,
         description: product.description,
         type: product.type,
-        price: parseFloat(product.price),  // Convert price to number
+        price: parseFloat(product.price), // Convert price to number
         availability: product.availability,
         solar_site_id: product.solar_site_id,
-        image: null as File | null,  // Add image to the form state
+        image: null as string | null, // Add image to the form state
+        // _method: "PUT",
     });
 
-    const [previewImage, setPreviewImage] = useState<string | null>(bucketLink + product.image_path || null); // Image preview
+    const [previewImage, setPreviewImage] = useState<string | null>(
+        bucketLink + product.image_path || null
+    ); // Image preview
 
     const validate = () => {
         const newErrors: any = {};
-        if (!data.name) newErrors.name = 'Name is required.';
-        if (!data.description) newErrors.description = 'Description is required.';
-        if (!data.type) newErrors.type = 'Type is required.';
-        if (!data.price || data.price <= 10) newErrors.price = 'Price must be greater than 10.';
-        if (!data.availability) newErrors.availability = 'Availability is required.';
-        if (!data.solar_site_id) newErrors.solar_site_id = 'Solar Site is required.';
-        
+        if (!data.name) newErrors.name = "Name is required.";
+        if (!data.description)
+            newErrors.description = "Description is required.";
+        if (!data.type) newErrors.type = "Type is required.";
+        if (!data.price || data.price <= 10)
+            newErrors.price = "Price must be greater than 10.";
+        if (!data.availability)
+            newErrors.availability = "Availability is required.";
+        if (!data.solar_site_id)
+            newErrors.solar_site_id = "Solar Site is required.";
+
         setLocalErrors(newErrors);
 
         return Object.keys(newErrors).length === 0;
     };
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files && e.target.files[0]) {
-            setData('image', e.target.files[0]); // Update form data with the selected file
-            setPreviewImage(URL.createObjectURL(e.target.files[0])); // Set image preview
+        const file = e.target.files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                const result = reader.result as string;
+                setPreviewImage(result);
+                setData('image', result);
+            };
+            reader.readAsDataURL(file);
         }
     };
 
     const submit = (e: React.FormEvent) => {
         e.preventDefault();
         if (validate()) {
-            put(`/solar-products-services/${product.id}`, {
-                forceFormData: true, // Ensures the image file is included in the FormData
-            });
+            console.log(data);
+            // put(`/solar-products-services/${product.id}`, {
+            //     forceFormData: true,
+            // });
+            patch(`/solar-products-services/${product.id}`);
         }
     };
 
     return (
         <AuthenticatedLayout
             user={auth.user}
-            header={<h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">Edit Solar Product or Service</h2>}
+            header={
+                <h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+                    Edit Solar Product or Service
+                </h2>
+            }
         >
             <Head title="Edit Solar Product or Service" />
 
@@ -93,107 +113,193 @@ export default function Edit({ auth, product, solarSites }: EditProps) {
 
                     <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                         <div className="p-6 text-gray-900 dark:text-gray-100">
-
                             <form onSubmit={submit}>
                                 {/* Name */}
                                 <div className="mb-4">
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Name:</label>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                        Name:
+                                    </label>
                                     <input
                                         type="text"
                                         value={data.name}
-                                        onChange={e => setData('name', e.target.value)}
+                                        onChange={(e) =>
+                                            setData("name", e.target.value)
+                                        }
                                         className="mt-1 block w-full bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                                     />
-                                    {localErrors.name && <div className="text-red-600 text-sm mt-2">{localErrors.name}</div>}
+                                    {localErrors.name && (
+                                        <div className="text-red-600 text-sm mt-2">
+                                            {localErrors.name}
+                                        </div>
+                                    )}
                                 </div>
 
                                 {/* Description */}
                                 <div className="mb-4">
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Description:</label>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                        Description:
+                                    </label>
                                     <textarea
                                         value={data.description}
-                                        onChange={e => setData('description', e.target.value)}
+                                        onChange={(e) =>
+                                            setData(
+                                                "description",
+                                                e.target.value
+                                            )
+                                        }
                                         className="mt-1 block w-full bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                                     />
-                                    {localErrors.description && <div className="text-red-600 text-sm mt-2">{localErrors.description}</div>}
+                                    {localErrors.description && (
+                                        <div className="text-red-600 text-sm mt-2">
+                                            {localErrors.description}
+                                        </div>
+                                    )}
                                 </div>
 
                                 {/* Type */}
                                 <div className="mb-4">
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Type:</label>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                        Type:
+                                    </label>
                                     <select
                                         value={data.type}
-                                        onChange={e => setData('type', e.target.value)}
+                                        onChange={(e) =>
+                                            setData("type", e.target.value)
+                                        }
                                         className="mt-1 block w-full bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                                     >
                                         <option value="Product">Product</option>
                                         <option value="Service">Service</option>
                                     </select>
-                                    {localErrors.type && <div className="text-red-600 text-sm mt-2">{localErrors.type}</div>}
+                                    {localErrors.type && (
+                                        <div className="text-red-600 text-sm mt-2">
+                                            {localErrors.type}
+                                        </div>
+                                    )}
                                 </div>
 
                                 {/* Price */}
                                 <div className="mb-4">
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Price:</label>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                        Price:
+                                    </label>
                                     <input
                                         type="number"
                                         step="0.01"
                                         value={data.price}
-                                        onChange={e => setData('price', e.target.valueAsNumber)}
+                                        onChange={(e) =>
+                                            setData(
+                                                "price",
+                                                e.target.valueAsNumber
+                                            )
+                                        }
                                         className="mt-1 block w-full bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                                     />
-                                    {localErrors.price && <div className="text-red-600 text-sm mt-2">{localErrors.price}</div>}
+                                    {localErrors.price && (
+                                        <div className="text-red-600 text-sm mt-2">
+                                            {localErrors.price}
+                                        </div>
+                                    )}
                                 </div>
 
                                 {/* Availability */}
                                 <div className="mb-4">
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Availability:</label>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                        Availability:
+                                    </label>
                                     <select
                                         value={data.availability}
-                                        onChange={e => setData('availability', e.target.value)}
+                                        onChange={(e) =>
+                                            setData(
+                                                "availability",
+                                                e.target.value
+                                            )
+                                        }
                                         className="mt-1 block w-full bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                                     >
-                                        <option value="In Stock">In Stock</option>
-                                        <option value="Out of Stock">Out of Stock</option>
+                                        <option value="In Stock">
+                                            In Stock
+                                        </option>
+                                        <option value="Out of Stock">
+                                            Out of Stock
+                                        </option>
                                     </select>
-                                    {localErrors.availability && <div className="text-red-600 text-sm mt-2">{localErrors.availability}</div>}
+                                    {localErrors.availability && (
+                                        <div className="text-red-600 text-sm mt-2">
+                                            {localErrors.availability}
+                                        </div>
+                                    )}
                                 </div>
 
                                 {/* Solar Site */}
                                 <div className="mb-4">
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Solar Site:</label>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                        Solar Site:
+                                    </label>
                                     <select
                                         value={data.solar_site_id}
-                                        onChange={e => setData('solar_site_id', parseInt(e.target.value))}
+                                        onChange={(e) =>
+                                            setData(
+                                                "solar_site_id",
+                                                parseInt(e.target.value)
+                                            )
+                                        }
                                         className="mt-1 block w-full bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                                     >
-                                        <option value="">Select a Solar Site</option>
-                                        {solarSites.map(site => (
-                                            <option key={site.id} value={site.id}>{site.name}</option>
+                                        <option value="">
+                                            Select a Solar Site
+                                        </option>
+                                        {solarSites.map((site) => (
+                                            <option
+                                                key={site.id}
+                                                value={site.id}
+                                            >
+                                                {site.name}
+                                            </option>
                                         ))}
                                     </select>
-                                    {localErrors.solar_site_id && <div className="text-red-600 text-sm mt-2">{localErrors.solar_site_id}</div>}
+                                    {localErrors.solar_site_id && (
+                                        <div className="text-red-600 text-sm mt-2">
+                                            {localErrors.solar_site_id}
+                                        </div>
+                                    )}
                                 </div>
 
                                 {/* Image Upload */}
                                 <div className="mb-4">
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Upload New Image:</label>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                        Upload New Image:
+                                    </label>
                                     <input
                                         type="file"
+                                        ref={fileInputRef}
                                         accept="image/*"
                                         onChange={handleImageChange}
                                         className="mt-1 block w-full bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                                     />
                                     {previewImage && (
                                         <div className="mt-4">
-                                            <p className="text-sm text-gray-600">Current Image:</p>
-                                            <img src={previewImage} alt="Current image" className="w-32 h-32 object-cover" />
+                                            <p className="text-sm text-gray-600">
+                                                Current Image:
+                                            </p>
+                                            <img
+                                                src={previewImage}
+                                                alt="Current image"
+                                                className="w-32 h-32 object-cover"
+                                            />
                                         </div>
                                     )}
-                                    {localErrors.image && <div className="text-red-600 text-sm mt-2">{localErrors.image}</div>}
+                                    {localErrors.image && (
+                                        <div className="text-red-600 text-sm mt-2">
+                                            {localErrors.image}
+                                        </div>
+                                    )}
                                 </div>
 
-                                <button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg">
+                                <button
+                                    type="submit"
+                                    className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg"
+                                >
                                     Update Product/Service
                                 </button>
                             </form>
