@@ -93,11 +93,11 @@ class SolarProductServiceController extends Controller
     public function update(Request $request, string $id)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => 'nullable|string|max:255',
             'description' => 'nullable|string',
-            'type' => 'required|in:Product,Service',
+            'type' => 'nullable|in:Product,Service',
             'price' => 'nullable|numeric',
-            'availability' => 'required|string',
+            'availability' => 'nullable|string',
             'solar_site_id' => 'nullable|exists:solar_construction_sites,id',
             'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
