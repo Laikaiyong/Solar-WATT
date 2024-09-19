@@ -42,6 +42,7 @@ Route::middleware('auth')->group(function () {
 Route::middleware('auth')->group(function () {
     Route::resource('solar-products-services', SolarProductServiceController::class);
     Route::get('/product-list', [SolarProductServiceController::class, 'browse'])->name('product-list.browse'); // For browsing solar products
+    Route::get('/product-details', [SolarProductServiceController::class, 'getProductsByIds'])->name('product-details');
 });
 
 // Cart and Order Management

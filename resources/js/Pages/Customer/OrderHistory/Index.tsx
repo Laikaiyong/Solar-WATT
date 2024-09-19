@@ -3,23 +3,25 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head } from "@inertiajs/react";
 import axios from "axios";
 
-interface Product {
-    name: string;
-    price: number;
-}
-
 interface OrderItem {
     id: number;
-    product: Product;
+    product_id: number;
     quantity: number;
     price: number;
 }
 
 interface Order {
     id: number;
+    status: string;
+    items: OrderItem[];
     created_at: string;
     total_amount: number;
-    items: OrderItem[];
+}
+
+interface Product {
+    id: number;
+    name: string;
+    price: number;
 }
 
 export default function OrderHistory({
@@ -30,21 +32,37 @@ export default function OrderHistory({
     orders: Order[];
 }) {
     const [orderData, setOrderData] = useState<Order[]>(orders);
+    const [products, setProducts] = useState<{ [key: number]: Product }>({});
 
-    // Fetch the user's order history with associated items
-    // useEffect(() => {
-    //     const fetchOrders = async () => {
-    //         try {
-    //             const response = await axios.get("/orders"); // Adjust to the correct route
-    //             console.log("Fetched Orders:", response.data); // Log the response data
-    //             setOrders(response.data); // Assume backend returns an array of orders
-    //         } catch (error) {
-    //             console.error("Failed to fetch orders", error);
-    //         }
-    //     };
+    useEffect(() => {
+        const fetchProductDetails = async () => {
+            try {
+                const productIds = new Set(
+                    orders.flatMap((order) =>
+                        order.items.map((item) => item.product_id)
+                    )
+                );
 
-    //     fetchOrders();
-    // }, []);
+                const response = await axios.get("/product-details", {
+                    params: { ids: Array.from(productIds) },
+                });
+                const productDetails = response.data;
+                const productMap = productDetails.reduce(
+                    (acc: { [key: number]: Product }, product: Product) => {
+                        acc[product.id] = product;
+                        return acc;
+                    },
+                    {}
+                );
+
+                setProducts(productMap);
+            } catch (error) {
+                console.error("Failed to fetch product details", error);
+            }
+        };
+
+        fetchProductDetails();
+    }, [orders]);
 
     return (
         <AuthenticatedLayout
@@ -59,64 +77,82 @@ export default function OrderHistory({
         >
             <Head title="Order History" />
 
-            <div className="py-10">
+            <div className="py-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                         <div className="p-6 text-gray-900 dark:text-gray-100">
                             {orderData.length === 0 ? (
-                                <p className="text-center text-gray-500">
+                                <p className="text-center text-gray-500 mt-6">
                                     You haven't placed any orders yet.
                                 </p>
                             ) : (
                                 <div className="overflow-x-auto">
-                                    <table className="min-w-full bg-white dark:bg-gray-800 shadow rounded-lg">
-                                        <thead>
+                                    <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                                        <thead className="bg-gray-100 dark:bg-gray-700">
                                             <tr>
-                                                <th>Order ID</th>
-                                                <th>Order Date</th>
-                                                <th>Products</th>
-                                                <th>Total Price</th>
+                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                                    Order ID
+                                                </th>
+                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                                    Order Date
+                                                </th>
+                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                                    Products
+                                                </th>
+                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                                    Total Price
+                                                </th>
                                             </tr>
                                         </thead>
-                                        <tbody>
+                                        <tbody className="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
                                             {orderData.map((order) => (
                                                 <tr key={order.id}>
-                                                    <td>{order.id}</td>
-                                                    <td>
+                                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
+                                                        {order.id}
+                                                    </td>
+                                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
                                                         {new Date(
                                                             order.created_at
                                                         ).toLocaleDateString()}
                                                     </td>
-                                                    <td>
+                                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
                                                         {order.items.map(
-                                                            (item) => (
-                                                                <div
-                                                                    key={
-                                                                        item.id
-                                                                    }
-                                                                >
-                                                                    {
+                                                            (item) => {
+                                                                const product =
+                                                                    products[
                                                                         item
-                                                                            .product
-                                                                            .name
-                                                                    }{" "}
-                                                                    (Qty:{" "}
-                                                                    {
-                                                                        item.quantity
-                                                                    }
-                                                                    ) - RM{" "}
-                                                                    {item.price.toFixed(
-                                                                        2
-                                                                    )}
-                                                                </div>
-                                                            )
+                                                                            .product_id
+                                                                    ];
+                                                                return (
+                                                                    <div
+                                                                        key={
+                                                                            item.id
+                                                                        }
+                                                                    >
+                                                                        {product ? (
+                                                                            <>
+                                                                                {
+                                                                                    product.name
+                                                                                }
+                                                                            </>
+                                                                        ) : (
+                                                                            <span>
+                                                                                Product
+                                                                                name
+                                                                                not
+                                                                                found
+                                                                            </span>
+                                                                        )}
+                                                                    </div>
+                                                                );
+                                                            }
                                                         )}
                                                     </td>
-                                                    <td>
+                                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
                                                         RM{" "}
-                                                        {order.total_amount.toFixed(
-                                                            2
-                                                        )}
+                                                        {Number(
+                                                            order.total_amount
+                                                        ).toFixed(2)}
                                                     </td>
                                                 </tr>
                                             ))}
