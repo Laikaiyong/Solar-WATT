@@ -19,6 +19,14 @@ interface Product {
     image_url?: string; // Optional field to handle product images
 }
 
+// Define a CartItem interface to represent the structure of a cart item
+interface CartItem {
+    id: number;
+    product_id: number;
+    cart_id: number;
+    quantity: number;
+}
+
 export default function Index({
     auth,
     products,
@@ -47,11 +55,21 @@ export default function Index({
     const fetchOrCreateCart = async (): Promise<number | null> => {
         try {
             console.log("Attempting to create or fetch a cart...");
-            const response = await axios.get('/carts'); // Fetch cart
+            const response = await axios.get('/carts'); // Fetch cart and its items
 
             if (response.data && response.data.id) {
                 console.log("Cart fetched successfully:", response.data);
                 setCartId(response.data.id); // Set the cart ID
+                
+                // Set the cart items count based on the items fetched
+                if (response.data.items && response.data.items.length > 0) {
+                    setCartItems(
+                        response.data.items.reduce((acc: number, item: CartItem) => acc + item.quantity, 0)
+                    ); // Sum of quantities in the cart
+                } else {
+                    setCartItems(0); // If no items, set cart items count to 0
+                }
+
                 return response.data.id; // Return the cart ID directly
             } else {
                 console.error("No cart returned from the server.");
@@ -62,6 +80,7 @@ export default function Index({
             return null;
         }
     };
+
 
     // Function to add a product to the cart
     const addToCart = async (productId: number) => {
@@ -116,6 +135,7 @@ export default function Index({
                     <Link href="/cart" className="text-sm text-blue-500 hover:text-blue-700">
                         View Cart ({cartItems})
                     </Link>
+
                 </div>
             }
         >

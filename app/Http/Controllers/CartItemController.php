@@ -11,9 +11,10 @@ class CartItemController extends Controller
     // Retrieve all items in the cart
     public function index($cart_id)
     {
-        $items = CartItem::where('cart_id', $cart_id)->get();
+        $items = CartItem::where('cart_id', $cart_id)->with('product')->get(); // Ensure the product details are included
         return response()->json($items);
     }
+
 
     // Add an item to the cart
     public function store(Request $request)

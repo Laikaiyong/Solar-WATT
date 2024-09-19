@@ -13,8 +13,12 @@ class CartController extends Controller
         $user = auth()->user(); // Get the authenticated user
         $cart = $this->getOrCreateCart($user); // Call the method with the user object
 
-        return response()->json($cart); // Return the cart as JSON
+        // Load the cart items with associated product information
+        $cart->load('items.product');
+
+        return response()->json($cart); // Return the cart as JSON with its items
     }
+
 
     protected function getOrCreateCart($user)
     {
@@ -26,8 +30,12 @@ class CartController extends Controller
             $cart = Cart::create(['user_id' => $user->id]);
         }
 
+        // Ensure the items are loaded
+        $cart->load('items.product'); // Load the cart items with the associated products
+
         return $cart;
     }
+
 
 
     // Get or create a cart for the authenticated user
