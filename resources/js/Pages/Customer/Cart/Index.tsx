@@ -3,6 +3,8 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout"; // Adjust this 
 import { Head, Link } from "@inertiajs/react";
 import axios from "axios";
 
+const bucketLink = import.meta.env.VITE_S3_BUCKET_LINK || "";
+
 // Define the CartItem interface
 interface CartItem {
     id: number;
@@ -95,7 +97,7 @@ export default function Cart({ auth, cart, items }: { auth: any; cart: any; item
                                                 {/* Product Image */}
                                                 {item.product.image_url ? (
                                                     <img
-                                                        src={item.product.image_url}
+                                                        src={bucketLink + item.product.image_url}
                                                         alt={item.product.name}
                                                         className="w-full h-48 object-cover mb-4"
                                                     />
