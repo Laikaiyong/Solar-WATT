@@ -170,4 +170,13 @@ class SolarProductServiceController extends Controller
             'products' => $products->toArray(),
         ]);
     }
+
+
+    public function getProductsByIds(Request $request)
+    {
+        $ids = $request->query('ids'); // Retrieve IDs from query parameter
+        $products = SolarProductService::whereIn('id', $ids)->get();
+        return response()->json($products);
+    }
+
 }

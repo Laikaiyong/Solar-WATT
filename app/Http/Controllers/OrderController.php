@@ -6,6 +6,7 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class OrderController extends Controller
 {
@@ -59,4 +60,15 @@ class OrderController extends Controller
         Order::destroy($id);
         return response()->json(null, 204);
     }
+
+    public function getUserOrders()
+{
+    $orders = Order::with(['items.product'])
+        ->where('user_id', Auth::id())
+        ->get();
+
+    return Inertia::render('Customer/OrderHistory/Index', [
+        'orders' => $orders,
+    ]);
+}
 }

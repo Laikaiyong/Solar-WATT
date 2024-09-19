@@ -26,5 +26,9 @@ class Order extends Model
     {
         return $this->belongsTo(User::class);
     }
-}
 
+    public function product()
+    {
+        return $this->belongsTo(SolarProductService::class, 'product_id');
+    }
+}

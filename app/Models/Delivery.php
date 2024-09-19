@@ -18,9 +18,8 @@ class Delivery extends Model
         'message',
     ];
 
-    // Define the inverse relationship back to Order
     public function order()
     {
-        return $this->belongsTo(Order::class);
+        return $this->belongsTo(Order::class, 'order_id');
     }
 }

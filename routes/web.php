@@ -42,6 +42,7 @@ Route::middleware('auth')->group(function () {
 Route::middleware('auth')->group(function () {
     Route::resource('solar-products-services', SolarProductServiceController::class);
     Route::get('/product-list', [SolarProductServiceController::class, 'browse'])->name('product-list.browse'); // For browsing solar products
+    Route::get('/product-details', [SolarProductServiceController::class, 'getProductsByIds'])->name('product-details');
 });
 
 // Cart and Order Management
@@ -66,10 +67,9 @@ Route::middleware('auth')->group(function () {
 
 });
 
-// Customer: Purchase History
+// Customer: Order History
 Route::middleware('auth')->group(function () {
-    Route::get('/purchases', [PurchaseController::class, 'index'])->name('purchases.index');
-    Route::get('/purchases/{id}', [PurchaseController::class, 'show'])->name('purchases.show');
+    Route::get('/order-history', [OrderController::class, 'getUserOrders'])->name('order-history.orders');
 });
 
 // Customer: Feedback and Suggestions
