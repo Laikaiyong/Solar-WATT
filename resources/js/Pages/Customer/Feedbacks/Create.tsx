@@ -1,14 +1,38 @@
+import { useState, useEffect } from "react";
 import { useForm } from "@inertiajs/react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, Link } from "@inertiajs/react";
-import { useState } from "react";
+import axios from "axios";
+
+interface Order {
+    id: number;
+    created_at: string;
+    total_amount: number;
+}
 
 export default function Create({ auth }: { auth: any }) {
     const { data, setData, post } = useForm({
         message: "",
+        order_id: "", // New field to capture selected order
     });
 
     const [formErrors, setFormErrors] = useState<any>({});
+    const [orders, setOrders] = useState<Order[]>([]); // Initialize as an empty array
+
+    // Fetch the user's orders when the component mounts
+    useEffect(() => {
+        const fetchOrders = async () => {
+            try {
+                const response = await axios.get("/get-user-orders");
+                setOrders(response.data.orders || []);
+            } catch (error) {
+                console.error("Failed to fetch orders", error);
+                setOrders([]);
+            }
+        };
+
+        fetchOrders();
+    }, []);
 
     const validate = () => {
         let isValid = true;
@@ -16,6 +40,11 @@ export default function Create({ auth }: { auth: any }) {
 
         if (!data.message) {
             newErrors.message = "Message is required.";
+            isValid = false;
+        }
+
+        if (!data.order_id) {
+            newErrors.order_id = "You must select an order.";
             isValid = false;
         }
 
@@ -27,7 +56,7 @@ export default function Create({ auth }: { auth: any }) {
         e.preventDefault();
 
         if (validate()) {
-            post("/feedbacks"); // Adjust the route according to your setup
+            post("/feedbacks");
         }
     };
 
@@ -57,6 +86,51 @@ export default function Create({ auth }: { auth: any }) {
                     <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                         <div className="p-6 text-gray-900 dark:text-gray-100">
                             <form onSubmit={submit}>
+                                {/* Dropdown to select order */}
+                                <div className="mb-4">
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                        Select Order:
+                                    </label>
+                                    <select
+                                        value={data.order_id}
+                                        onChange={(e) =>
+                                            setData("order_id", e.target.value)
+                                        }
+                                        className="mt-1 block w-full bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                    >
+                                        <option value="">
+                                            -- Select an Order --
+                                        </option>
+                                        {orders.length > 0 ? (
+                                            orders.map((order) => (
+                                                <option
+                                                    key={order.id}
+                                                    value={order.id}
+                                                >
+                                                    Order #{order.id} - RM{" "}
+                                                    {Number(
+                                                        order.total_amount
+                                                    ).toFixed(2)}{" "}
+                                                    (Placed on{" "}
+                                                    {new Date(
+                                                        order.created_at
+                                                    ).toLocaleDateString()}
+                                                    )
+                                                </option>
+                                            ))
+                                        ) : (
+                                            <option disabled>
+                                                No orders available
+                                            </option>
+                                        )}
+                                    </select>
+                                    {formErrors.order_id && (
+                                        <div className="text-red-600 text-sm mt-2">
+                                            {formErrors.order_id}
+                                        </div>
+                                    )}
+                                </div>
+
                                 {/* Message */}
                                 <div className="mb-4">
                                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
