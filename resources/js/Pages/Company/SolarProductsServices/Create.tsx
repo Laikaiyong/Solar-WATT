@@ -2,9 +2,17 @@ import { useForm } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link } from '@inertiajs/react';
 import { useState } from 'react';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
-export default function Create({ auth, solarSites }: { auth: any, solarSites: { id: number, name: string }[] }) {
-    const { data, setData, post, progress } = useForm({
+interface SolarSite {
+    id: number;
+    name: string;
+    status: string;  
+}
+
+export default function Create({ auth, solarSites }: { auth: any, solarSites: SolarSite[] }) {
+    const { data, setData, post } = useForm({
         name: '',
         description: '',
         type: 'Product', // Default type
@@ -49,7 +57,17 @@ export default function Create({ auth, solarSites }: { auth: any, solarSites: { 
         e.preventDefault();
 
         if (validate()) {
-            post('/solar-products-services');
+            post('/solar-products-services', {
+                onSuccess: () => {
+                    localStorage.setItem('toastMessage', 'Product/Service created successfully!');
+                    setTimeout(() => {
+                        window.location.href = '/solar-products-services';
+                    }, 1000);  // 1s delay
+                },
+                onError: () => {
+                    toast.error('Failed to create product/service. Please check the form.');
+                },
+            });
         }
     };
 
@@ -75,7 +93,6 @@ export default function Create({ auth, solarSites }: { auth: any, solarSites: { 
 
                     <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                         <div className="p-6 text-gray-900 dark:text-gray-100">
-
                             <form onSubmit={submit}>
                                 {/* Name */}
                                 <div className="mb-4">
@@ -84,7 +101,7 @@ export default function Create({ auth, solarSites }: { auth: any, solarSites: { 
                                         type="text"
                                         value={data.name}
                                         onChange={e => setData('name', e.target.value)}
-                                        className="mt-1 block w-full bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                        className="mt-1 block w-full bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm"
                                     />
                                     {formErrors.name && <div className="text-red-600 text-sm mt-2">{formErrors.name}</div>}
                                 </div>
@@ -95,7 +112,7 @@ export default function Create({ auth, solarSites }: { auth: any, solarSites: { 
                                     <textarea
                                         value={data.description}
                                         onChange={e => setData('description', e.target.value)}
-                                        className="mt-1 block w-full bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                        className="mt-1 block w-full bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm"
                                     />
                                     {formErrors.description && <div className="text-red-600 text-sm mt-2">{formErrors.description}</div>}
                                 </div>
@@ -106,12 +123,11 @@ export default function Create({ auth, solarSites }: { auth: any, solarSites: { 
                                     <select
                                         value={data.type}
                                         onChange={e => setData('type', e.target.value)}
-                                        className="mt-1 block w-full bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                        className="mt-1 block w-full bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm"
                                     >
                                         <option value="Product">Product</option>
                                         <option value="Service">Service</option>
                                     </select>
-                                    {formErrors.type && <div className="text-red-600 text-sm mt-2">{formErrors.type}</div>}
                                 </div>
 
                                 {/* Price */}
@@ -122,7 +138,7 @@ export default function Create({ auth, solarSites }: { auth: any, solarSites: { 
                                         step="0.01"
                                         value={data.price}
                                         onChange={e => setData('price', e.target.value)}
-                                        className="mt-1 block w-full bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                        className="mt-1 block w-full bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm"
                                     />
                                     {formErrors.price && <div className="text-red-600 text-sm mt-2">{formErrors.price}</div>}
                                 </div>
@@ -133,12 +149,11 @@ export default function Create({ auth, solarSites }: { auth: any, solarSites: { 
                                     <select
                                         value={data.availability}
                                         onChange={e => setData('availability', e.target.value)}
-                                        className="mt-1 block w-full bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                        className="mt-1 block w-full bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm"
                                     >
                                         <option value="In Stock">In Stock</option>
                                         <option value="Out of Stock">Out of Stock</option>
                                     </select>
-                                    {formErrors.availability && <div className="text-red-600 text-sm mt-2">{formErrors.availability}</div>}
                                 </div>
 
                                 {/* Solar Site */}
@@ -147,12 +162,16 @@ export default function Create({ auth, solarSites }: { auth: any, solarSites: { 
                                     <select
                                         value={data.solar_site_id}
                                         onChange={e => setData('solar_site_id', e.target.value)}
-                                        className="mt-1 block w-full bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                        className="mt-1 block w-full bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm"
                                     >
                                         <option value="">Select a Solar Site</option>
-                                        {solarSites.map(site => (
-                                            <option key={site.id} value={site.id}>{site.name}</option>
-                                        ))}
+                                        {solarSites
+                                            .filter(site => site.status === 'Active') // Only show active sites
+                                            .map(site => (
+                                                <option key={site.id} value={site.id}>
+                                                    {site.name}
+                                                </option>
+                                            ))}
                                     </select>
                                     {formErrors.solar_site_id && <div className="text-red-600 text-sm mt-2">{formErrors.solar_site_id}</div>}
                                 </div>
@@ -164,7 +183,7 @@ export default function Create({ auth, solarSites }: { auth: any, solarSites: { 
                                         accept="image/*"
                                         type="file"
                                         onChange={e => setData('image', e.target.files ? e.target.files[0] : null)}
-                                        className="mt-1 block w-full bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                        className="mt-1 block w-full bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm"
                                     />
                                     {formErrors.image && <div className="text-red-600 text-sm mt-2">{formErrors.image}</div>}
                                 </div>
@@ -177,6 +196,9 @@ export default function Create({ auth, solarSites }: { auth: any, solarSites: { 
                     </div>
                 </div>
             </div>
+
+            {/* Toast Container */}
+            <ToastContainer />
         </AuthenticatedLayout>
     );
 }

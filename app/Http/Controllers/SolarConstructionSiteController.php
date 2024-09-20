@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\SolarConstructionSite;
+use App\Models\Quotation;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -22,9 +23,16 @@ class SolarConstructionSiteController extends Controller
     public function allSites()
     {
         // Fetch all sites from the database
-        $sites = SolarConstructionSite::all(); 
-        return Inertia::render('Company/SolarConstructionSites/Sites', ['sites' => $sites]);
+        $sites = SolarConstructionSite::all();
+        $quotations = Quotation::where('constructor_id', auth()->user()->id)->get();
+
+        return Inertia::render('Company/SolarConstructionSites/Sites', [
+            'auth' => auth()->user(),  // Check if this is correctly passed
+            'sites' => $sites,
+            'quotations' => $quotations,
+        ]);
     }
+
 
     /**
      * Show the form for creating a new resource.
@@ -113,4 +121,37 @@ class SolarConstructionSiteController extends Controller
         // Redirect back to the index page with a success message
         return redirect()->route('solar-construction-sites.index')->with('success', 'Site deleted successfully.');
     }
+
+    /**
+     * Update the status of a specific SolarConstructionSite.
+     */
+    public function updateStatus(Request $request, string $id)
+    {
+
+        // Validate that only the status is being updated
+        $validated = $request->validate([
+            'status' => 'required|string|in:Pending,Active,Under Construction,Inactive',
+        ]);
+
+        // Log the status being passed in the request
+        \Log::info("Updating site status to: " . $validated['status']);
+
+        // Find the SolarConstructionSite by ID
+        $site = SolarConstructionSite::findOrFail($id);
+
+        // Log the current status before updating
+        \Log::info("Current site status: " . $site->status);
+
+        // Update the site's status
+        $site->update([
+            'status' => $validated['status'],
+        ]);
+
+        // Log the status after updating
+        \Log::info("Updated site status to: " . $site->status);
+
+        // Return a response to indicate success
+        return redirect()->back()->with('success', 'Site status updated successfully.');
+    }
+
 }
