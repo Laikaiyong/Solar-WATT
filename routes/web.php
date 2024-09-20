@@ -87,6 +87,8 @@ Route::middleware('auth')->group(function () {
 // Customer: Feedback and Suggestions
 Route::middleware('auth')->group(function () {
     Route::resource('feedbacks', FeedbackController::class); // Manage customer feedback
+    Route::get('/get-user-orders', [OrderController::class, 'getUserOrdersJson'])
+    ->name('get-user-orders');
 });
 
 // Deliveryman 
