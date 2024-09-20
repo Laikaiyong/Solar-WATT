@@ -10,7 +10,6 @@ interface Order {
     total_amount: number;
 }
 
-
 export default function Create({ auth }: { auth: any }) {
     const { data, setData, post } = useForm({
         user_id: auth.user.id!,
@@ -96,7 +95,10 @@ export default function Create({ auth }: { auth: any }) {
                                     <select
                                         value={data.product_id}
                                         onChange={(e) =>
-                                            setData("product_id", e.target.value)
+                                            setData(
+                                                "product_id",
+                                                e.target.value
+                                            )
                                         }
                                         className="mt-1 block w-full bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                                     >

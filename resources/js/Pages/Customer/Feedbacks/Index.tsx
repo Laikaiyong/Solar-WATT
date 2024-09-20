@@ -9,6 +9,13 @@ interface Feedback {
         id: number;
         name: string;
     };
+    product: Product | null;
+    product_id: number; // Add product_id to map to order ID
+}
+
+interface Product {
+    id: number;
+    name: string;
 }
 
 export default function Index({
@@ -18,14 +25,13 @@ export default function Index({
     auth: any;
     feedbacks: Feedback[];
 }) {
-    // Create a form to handle deletions
     const { delete: destroy, errors } = useForm();
 
     // Handle delete request
     const handleDelete = (id: number) => {
         if (confirm("Are you sure you want to delete this feedback?")) {
             destroy(`/feedbacks/${id}`, {
-                method: "delete", // Use lowercase 'delete'
+                method: "delete",
             });
         }
     };
@@ -54,13 +60,18 @@ export default function Index({
 
                     <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                         <div className="p-6 text-gray-900 dark:text-gray-100">
-                            {/* Table to display the feedbacks */}
                             <div className="overflow-x-auto">
                                 <table className="min-w-full bg-white dark:bg-gray-800 shadow rounded-lg">
                                     <thead>
                                         <tr>
                                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                                                 User
+                                            </th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                                Order ID
+                                            </th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                                Product
                                             </th>
                                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                                                 Message
@@ -74,6 +85,21 @@ export default function Index({
                                                 <td className="px-6 py-4 whitespace-nowrap">
                                                     <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
                                                         {feedback.user.name}
+                                                    </div>
+                                                </td>
+                                                <td className="px-6 py-4 whitespace-nowrap">
+                                                    <div className="text-sm text-gray-500 dark:text-gray-300">
+                                                        {feedback.product_id
+                                                            ? `Order #${feedback.product_id}`
+                                                            : "No order available"}
+                                                    </div>
+                                                </td>
+                                                <td className="px-6 py-4 whitespace-nowrap">
+                                                    <div className="text-sm text-gray-500 dark:text-gray-300">
+                                                        {feedback.product
+                                                            ? feedback.product
+                                                                  .name
+                                                            : "No product available"}
                                                     </div>
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap">

@@ -6,6 +6,7 @@ use App\Models\Feedbacks;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Auth;
 
 class FeedbackController extends Controller
 {
@@ -14,10 +15,10 @@ class FeedbackController extends Controller
      */
     public function index()
     {
-        $feedbacks = Feedbacks::with('user')->get();
-        return Inertia::render('Customer/Feedbacks/Index', [
-            'feedbacks' => $feedbacks->toArray(),
-        ]);
+        $feedbacks = Feedbacks::with('product', 'user', 'order')->get();
+        return inertia('Customer/Feedbacks/Index', [
+        'feedbacks' => $feedbacks->toArray(),
+]);
     }
 
     /**

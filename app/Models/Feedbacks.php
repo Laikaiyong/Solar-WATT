@@ -23,4 +23,13 @@ class Feedbacks extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function product()
+    {
+        return $this->belongsTo(SolarProductService::class, 'product_id');
+    }
+
+    public function order() {
+        return $this->belongsTo(Order::class); // Adjust the relationship as per your models
+    }
 }
