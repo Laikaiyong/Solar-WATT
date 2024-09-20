@@ -48,7 +48,13 @@ export default function Edit({
         };
 
         fetchOrders();
-    }, []);
+
+        // Initialize selectedOrderId and data based on the existing feedback
+        if (feedbacks?.order_id) {
+            setSelectedOrderId(feedbacks.order_id);
+            setData("order_id", feedbacks.order_id.toString());
+        }
+    }, [feedbacks]); // Make sure to include feedbacks as a dependency
 
     const validate = () => {
         let isValid = true;
@@ -123,15 +129,15 @@ export default function Edit({
                                             if (selectedOrder) {
                                                 setSelectedOrderId(
                                                     selectedOrderId
-                                                ); // Set the selected order ID for display
+                                                );
                                                 setData(
                                                     "product_id",
                                                     selectedOrder.product_id
-                                                ); // Set the correct product_id
+                                                );
                                                 setData(
                                                     "order_id",
                                                     selectedOrderId.toString()
-                                                ); // Set the order_id to the selected order
+                                                );
                                             }
                                         }}
                                         className="mt-1 block w-full bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
