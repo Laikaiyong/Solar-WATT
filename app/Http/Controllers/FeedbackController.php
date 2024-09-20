@@ -38,6 +38,7 @@ class FeedbackController extends Controller
     {
         $request->validate([
             'user_id' => 'required|exists:users,id',
+            'product_id' => 'required|exists:solar_products_services,id',
             'message' => 'required|string',
         ]);
 

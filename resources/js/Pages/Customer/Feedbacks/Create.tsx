@@ -10,10 +10,12 @@ interface Order {
     total_amount: number;
 }
 
+
 export default function Create({ auth }: { auth: any }) {
     const { data, setData, post } = useForm({
+        user_id: auth.user.id!,
         message: "",
-        order_id: "", // New field to capture selected order
+        product_id: "", // New field to capture selected order
     });
 
     const [formErrors, setFormErrors] = useState<any>({});
@@ -43,8 +45,8 @@ export default function Create({ auth }: { auth: any }) {
             isValid = false;
         }
 
-        if (!data.order_id) {
-            newErrors.order_id = "You must select an order.";
+        if (!data.product_id) {
+            newErrors.product_id = "You must select an order.";
             isValid = false;
         }
 
@@ -92,9 +94,9 @@ export default function Create({ auth }: { auth: any }) {
                                         Select Order:
                                     </label>
                                     <select
-                                        value={data.order_id}
+                                        value={data.product_id}
                                         onChange={(e) =>
-                                            setData("order_id", e.target.value)
+                                            setData("product_id", e.target.value)
                                         }
                                         className="mt-1 block w-full bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                                     >
@@ -124,9 +126,9 @@ export default function Create({ auth }: { auth: any }) {
                                             </option>
                                         )}
                                     </select>
-                                    {formErrors.order_id && (
+                                    {formErrors.product_id && (
                                         <div className="text-red-600 text-sm mt-2">
-                                            {formErrors.order_id}
+                                            {formErrors.product_id}
                                         </div>
                                     )}
                                 </div>

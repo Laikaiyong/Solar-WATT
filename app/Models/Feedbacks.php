@@ -13,6 +13,7 @@ class Feedbacks extends Model
     protected $fillable = [
         'user_id',
         'message',
+        'product_id'
     ];
 
     /**
