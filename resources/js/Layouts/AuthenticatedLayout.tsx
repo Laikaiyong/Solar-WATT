@@ -122,6 +122,10 @@ export default function Authenticated({
 
                                 {user.role == "company" && (
                                 <>
+                                <NavLink href={route('quotations.all')} active={route().current('quotations.all')}>
+                                    Site Quotations
+                                </NavLink>
+
                                 {/* Link to manage Solar Panel Construction Sites */}
                                 <NavLink href={route('solar-construction-sites.index')} active={route().current('solar-construction-sites.index')}
                                 >
@@ -133,9 +137,6 @@ export default function Authenticated({
                                     Products
                                 </NavLink>
 
-                                <NavLink href={route('quotations.all')} active={route().current('quotations.all')}>
-                                    View Quotations
-                                </NavLink>
                                 </>
                     )}
                             </div>

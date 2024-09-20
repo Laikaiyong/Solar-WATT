@@ -1,7 +1,9 @@
-import { useForm, } from "@inertiajs/react";
+import { useForm } from "@inertiajs/react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, Link } from "@inertiajs/react";
 import React, { useState, useRef } from "react";
+import { ToastContainer, toast } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
 const bucketLink = import.meta.env.VITE_S3_BUCKET_LINK || "";
 
@@ -13,7 +15,7 @@ interface Product {
     price: string;
     availability: string;
     solar_site_id: number;
-    image_path?: string; // The current image path stored in the backend
+    image_path?: string; 
 }
 
 interface SolarSite {
@@ -31,15 +33,14 @@ export default function Edit({ auth, product, solarSites }: EditProps) {
     const [localErrors, setLocalErrors] = useState<any>({});
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    const { data, setData, patch, put, errors } = useForm({
+    const { data, setData, patch, errors } = useForm({
         name: product.name,
         description: product.description,
         type: product.type,
-        price: parseFloat(product.price), // Convert price to number
+        price: parseFloat(product.price), 
         availability: product.availability,
         solar_site_id: product.solar_site_id,
-        image: null as string | null, // Add image to the form state
-        // _method: "PUT",
+        image: null as string | null, 
     });
 
     const [previewImage, setPreviewImage] = useState<string | null>(
@@ -60,7 +61,6 @@ export default function Edit({ auth, product, solarSites }: EditProps) {
             newErrors.solar_site_id = "Solar Site is required.";
 
         setLocalErrors(newErrors);
-
         return Object.keys(newErrors).length === 0;
     };
 
@@ -80,11 +80,17 @@ export default function Edit({ auth, product, solarSites }: EditProps) {
     const submit = (e: React.FormEvent) => {
         e.preventDefault();
         if (validate()) {
-            console.log(data);
-            // put(`/solar-products-services/${product.id}`, {
-            //     forceFormData: true,
-            // });
-            patch(`/solar-products-services/${product.id}`);
+            patch(`/solar-products-services/${product.id}`, {
+                onSuccess: () => {
+                    localStorage.setItem('toastMessage', 'Product/Service updated successfully!');
+                    setTimeout(() => {
+                        window.location.href = '/solar-products-services';
+                    }, 1000);  // 1s delay
+                },
+                onError: () => {
+                    toast.error('Failed to update the product/service.');
+                },
+            });
         }
     };
 
@@ -122,9 +128,7 @@ export default function Edit({ auth, product, solarSites }: EditProps) {
                                     <input
                                         type="text"
                                         value={data.name}
-                                        onChange={(e) =>
-                                            setData("name", e.target.value)
-                                        }
+                                        onChange={(e) => setData("name", e.target.value)}
                                         className="mt-1 block w-full bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                                     />
                                     {localErrors.name && (
@@ -141,12 +145,7 @@ export default function Edit({ auth, product, solarSites }: EditProps) {
                                     </label>
                                     <textarea
                                         value={data.description}
-                                        onChange={(e) =>
-                                            setData(
-                                                "description",
-                                                e.target.value
-                                            )
-                                        }
+                                        onChange={(e) => setData("description", e.target.value)}
                                         className="mt-1 block w-full bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                                     />
                                     {localErrors.description && (
@@ -163,9 +162,7 @@ export default function Edit({ auth, product, solarSites }: EditProps) {
                                     </label>
                                     <select
                                         value={data.type}
-                                        onChange={(e) =>
-                                            setData("type", e.target.value)
-                                        }
+                                        onChange={(e) => setData("type", e.target.value)}
                                         className="mt-1 block w-full bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                                     >
                                         <option value="Product">Product</option>
@@ -187,12 +184,7 @@ export default function Edit({ auth, product, solarSites }: EditProps) {
                                         type="number"
                                         step="0.01"
                                         value={data.price}
-                                        onChange={(e) =>
-                                            setData(
-                                                "price",
-                                                e.target.valueAsNumber
-                                            )
-                                        }
+                                        onChange={(e) => setData("price", e.target.valueAsNumber)}
                                         className="mt-1 block w-full bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                                     />
                                     {localErrors.price && (
@@ -209,20 +201,11 @@ export default function Edit({ auth, product, solarSites }: EditProps) {
                                     </label>
                                     <select
                                         value={data.availability}
-                                        onChange={(e) =>
-                                            setData(
-                                                "availability",
-                                                e.target.value
-                                            )
-                                        }
+                                        onChange={(e) => setData("availability", e.target.value)}
                                         className="mt-1 block w-full bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                                     >
-                                        <option value="In Stock">
-                                            In Stock
-                                        </option>
-                                        <option value="Out of Stock">
-                                            Out of Stock
-                                        </option>
+                                        <option value="In Stock">In Stock</option>
+                                        <option value="Out of Stock">Out of Stock</option>
                                     </select>
                                     {localErrors.availability && (
                                         <div className="text-red-600 text-sm mt-2">
@@ -238,22 +221,12 @@ export default function Edit({ auth, product, solarSites }: EditProps) {
                                     </label>
                                     <select
                                         value={data.solar_site_id}
-                                        onChange={(e) =>
-                                            setData(
-                                                "solar_site_id",
-                                                parseInt(e.target.value)
-                                            )
-                                        }
+                                        onChange={(e) => setData("solar_site_id", parseInt(e.target.value))}
                                         className="mt-1 block w-full bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                                     >
-                                        <option value="">
-                                            Select a Solar Site
-                                        </option>
+                                        <option value="">Select a Solar Site</option>
                                         {solarSites.map((site) => (
-                                            <option
-                                                key={site.id}
-                                                value={site.id}
-                                            >
+                                            <option key={site.id} value={site.id}>
                                                 {site.name}
                                             </option>
                                         ))}
@@ -307,6 +280,9 @@ export default function Edit({ auth, product, solarSites }: EditProps) {
                     </div>
                 </div>
             </div>
+
+            {/* Toast Container for Notifications */}
+            <ToastContainer />
         </AuthenticatedLayout>
     );
 }

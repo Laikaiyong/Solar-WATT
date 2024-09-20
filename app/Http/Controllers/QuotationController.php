@@ -108,12 +108,18 @@ class QuotationController extends Controller
         // Approving Quotation - For Company Usage
         public function approve($id)
         {
-            // Find the quotation without checking for constructor_id
+            // Fetch the approved quotation
             $quotation = Quotation::findOrFail($id);
 
-            // Update the status to 'Accepted'
+            // Set the status to 'Accepted'
             $quotation->status = 'Accepted';
             $quotation->save();
+
+            // Reject all other pending quotations for the same solar site
+            Quotation::where('solar_site_id', $quotation->solar_site_id)
+                ->where('id', '!=', $id) // Exclude the approved quotation
+                ->where('status', 'Pending') // Only reject pending quotations
+                ->update(['status' => 'Rejected']); // Set status to 'Rejected'
 
             return redirect()->route('quotations.all')->with('success', 'Quotation approved successfully');
         }
@@ -131,4 +137,9 @@ class QuotationController extends Controller
             return redirect()->route('quotations.all')->with('success', 'Quotation rejected successfully');
         }
 
+        public function show($id)
+        {
+            $quotation = Quotation::findOrFail($id);
+            return response()->json($quotation);
+        }
 }

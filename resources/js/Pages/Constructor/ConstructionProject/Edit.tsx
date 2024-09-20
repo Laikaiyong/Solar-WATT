@@ -3,6 +3,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link } from '@inertiajs/react';
 import { useState, useEffect } from 'react';
 import { Description } from '@radix-ui/react-toast';
+import axios from 'axios';
 
 interface Project {
     id: number;
@@ -14,6 +15,7 @@ interface Project {
     constructor_in_charge: string;
     manager_name: string;
     manager_contact_number: string;
+    quotation_id: number;
 }
 
 export default function EditProject({ auth, project }: { auth: any, project: Project }) {
@@ -86,20 +88,35 @@ export default function EditProject({ auth, project }: { auth: any, project: Pro
         return isValid;
     };
 
-    const submit = (e: React.FormEvent) => {
+    const submit = async (e: React.FormEvent) => {
         e.preventDefault();
-
+    
         if (validate()) {
-            // Convert contact number to string before submitting
             const updatedData = { ...data, manager_contact_number: String(data.manager_contact_number) };
-            put(`/constructor-projects/${project.id}`, {
+    
+            await put(`/constructor-projects/${project.id}`, {
                 data: updatedData,
-                onSuccess: () => {
-                    window.location.href = '/constructor-projects';
+                onSuccess: async () => {
+                    if (data.status === 'completed') {
+                        try {
+                            const { data: quotation } = await axios.get(`/quotations/${project.quotation_id}`);
+                            const solarSiteId = quotation.solar_site_id;
+                            console.log('Updating site status to Inactive for site:', solarSiteId);
+                    
+                            // Ensure the axios.put URL and parameters are correct
+                            await axios.put(`/solar-construction-sites/${solarSiteId}/update-status`, { status: 'Inactive' });
+                    
+                            window.location.href = '/constructor-projects';
+                        } catch (err) {
+                            console.error('Error updating site status:', err);
+                        }
+                    } else {
+                        window.location.href = '/constructor-projects'; // Redirect if the project is not completed
+                    }
                 },
             });
         }
-    };
+    };         
 
     return (
         <AuthenticatedLayout

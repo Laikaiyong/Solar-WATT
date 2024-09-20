@@ -1,12 +1,13 @@
 import { useForm } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link } from '@inertiajs/react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { ToastContainer, toast } from 'react-toastify'; 
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function Create({ auth }: { auth: any }) {
-
     const [formErrors, setFormErrors] = useState<any>({});
-    
+
     const { data, setData, post, errors } = useForm({
         name: '',
         location: '',
@@ -14,15 +15,23 @@ export default function Create({ auth }: { auth: any }) {
         email: auth.user.email,
         capacity: '',
         manager_name: auth.user.name,
-        status: 'Pending',
+        status: 'Pending',  
     });
+
+    useEffect(() => {
+        const toastMessage = localStorage.getItem('toastMessage');
+        if (toastMessage) {
+            toast.success(toastMessage);  // Show toast
+            localStorage.removeItem('toastMessage'); 
+        }
+    }, []);
 
     const validate = () => {
         let isValid = true;
         const newErrors: any = {};
-        
+
         if (!data.name) {
-            newErrors.name = 'Name is required.';
+            newErrors.name = 'Site name is required.';
             isValid = false;
         }
         if (!data.location) {
@@ -35,8 +44,6 @@ export default function Create({ auth }: { auth: any }) {
         } else if (!/^\d+$/.test(data.contact_number)) {
             newErrors.contact_number = 'Contact number must contain only digits.';
             isValid = false;
-        } else {
-            setData('contact_number', data.contact_number); // Convert back to string
         }
         if (!data.capacity || parseFloat(data.capacity) <= 0) {
             newErrors.capacity = !data.capacity ? 'Capacity is required.' : 'Capacity must be greater than 0.';
@@ -53,17 +60,26 @@ export default function Create({ auth }: { auth: any }) {
     const submit = (e: React.FormEvent) => {
         e.preventDefault();
         if (validate()) {
-            post('/solar-construction-sites');
+            post('/solar-construction-sites', {
+                onSuccess: () => {
+                    localStorage.setItem('toastMessage', 'Site plan created successfully!');
+                    setTimeout(() => {
+                        window.location.href = '/solar-construction-sites';
+                    }, 1000);  // 1s delay
+                    },
+                onError: () => {
+                    toast.error('Failed to create site plan. Please check the form.');
+                },
+            });
         }
     };
-
 
     return (
         <AuthenticatedLayout
             user={auth.user}
-            header={<h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">Create Solar Panel Construction Site</h2>}
+            header={<h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">Create Solar Panel Construction Site Plan</h2>}
         >
-            <Head title="Create Solar Construction Site" />
+            <Head title="Create Solar Site Plan" />
 
             <div className="py-10">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
@@ -80,18 +96,21 @@ export default function Create({ auth }: { auth: any }) {
 
                     <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                         <div className="p-6 text-gray-900 dark:text-gray-100">
-                            
+                            <p className="mb-4">
+                                You are creating a <strong>site plan</strong>. Constructor will review this plan and proceed with quotation.
+                            </p>
+
                             <form onSubmit={submit}>
                                 {/* Name */}
                                 <div className="mb-4">
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Name:</label>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Site Name:</label>
                                     <input
                                         type="text"
                                         value={data.name}
                                         onChange={e => setData('name', e.target.value)}
                                         className="mt-1 block w-full bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                                     />
-                                     {formErrors.name && <div className="text-red-600 text-sm mt-2">{formErrors.name}</div>}
+                                    {formErrors.name && <div className="text-red-600 text-sm mt-2">{formErrors.name}</div>}
                                 </div>
 
                                 {/* Location */}
@@ -123,8 +142,8 @@ export default function Create({ auth }: { auth: any }) {
                                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Email:</label>
                                     <input
                                         type="email"
-                                        value={data.email} // Set email from form data
-                                        readOnly // Make the field read-only
+                                        value={data.email}
+                                        readOnly
                                         className="mt-1 block w-full bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                                     />
                                     {errors.email && <div className="text-red-600 text-sm mt-2">{errors.email}</div>}
@@ -154,24 +173,11 @@ export default function Create({ auth }: { auth: any }) {
                                     {errors.manager_name && <div className="text-red-600 text-sm mt-2">{errors.manager_name}</div>}
                                 </div>
 
-                                {/* Status */}
-                                <div className="mb-4">
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Status:</label>
-                                    <select
-                                        value={data.status}
-                                        onChange={e => setData('status', e.target.value)}
-                                        className="mt-1 block w-full bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                    >
-                                        <option value="Pending">Pending</option>
-                                        <option value="Active">Active</option>
-                                        <option value="Under Construction">Under Construction</option>
-                                        <option value="Inactive">Inactive</option>
-                                    </select>
-                                    {errors.status && <div className="text-red-600 text-sm mt-2">{errors.status}</div>}
-                                </div>
+                                {/* Status (Hidden Field) */}
+                                <input type="hidden" value={data.status} />
 
                                 <button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg">
-                                    Create Site
+                                    Create Site Plan
                                 </button>
                             </form>
                         </div>
@@ -179,6 +185,8 @@ export default function Create({ auth }: { auth: any }) {
                 </div>
             </div>
 
+            {/* Toast Container to display notifications */}
+            <ToastContainer />
         </AuthenticatedLayout>
     );
 }

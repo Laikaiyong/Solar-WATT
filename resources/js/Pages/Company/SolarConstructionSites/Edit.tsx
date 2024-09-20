@@ -1,6 +1,8 @@
 import { useForm } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link } from '@inertiajs/react';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 interface Site {
     id: number;
@@ -26,7 +28,17 @@ export default function Edit({ auth, site }: { auth: any, site: Site }) {
 
     const submit = (e: React.FormEvent) => {
         e.preventDefault();
-        put(`/solar-construction-sites/${site.id}`);
+        put(`/solar-construction-sites/${site.id}`, {
+            onSuccess: () => {
+                localStorage.setItem('toastMessage', 'Site updated successfully!');
+                setTimeout(() => {
+                    window.location.href = '/solar-construction-sites';
+                }, 1000);  // 1s delay
+            },
+            onError: () => {
+                toast.error('Failed to update the site. Please check the form.');
+            },
+        });
     };
 
     return (
@@ -132,9 +144,7 @@ export default function Edit({ auth, site }: { auth: any, site: Site }) {
                                         onChange={e => setData('status', e.target.value)}
                                         className="mt-1 block w-full bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                                     >
-                                        <option value="Pending">Pending</option>
                                         <option value="Active">Active</option>
-                                        <option value="Under Construction">Under Construction</option>
                                         <option value="Inactive">Inactive</option>
                                     </select>
                                     {errors.status && <div className="text-red-600 text-sm mt-2">{errors.status}</div>}
@@ -149,6 +159,8 @@ export default function Edit({ auth, site }: { auth: any, site: Site }) {
                 </div>
             </div>
 
+            {/* Toast container to display notifications */}
+            <ToastContainer />
         </AuthenticatedLayout>
     );
 }

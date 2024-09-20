@@ -24,6 +24,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/constructor-quotation/all', [QuotationController::class, 'all'])->name('quotations.all');
     Route::post('/quotations/{id}/approve', [QuotationController::class, 'approve'])->name('quotations.approve');
     Route::post('/quotations/{id}/reject', [QuotationController::class, 'reject'])->name('quotations.reject');
+    Route::get('/quotations/{id}', [QuotationController::class, 'show']);
 });
 
 // Constructor Projects
@@ -45,6 +46,8 @@ Route::middleware('auth')->group(function () {
     Route::put('/solar-construction-sites/{id}', [SolarConstructionSiteController::class, 'update'])->name('solar-construction-sites.update');
     Route::delete('/solar-construction-sites/{id}', [SolarConstructionSiteController::class, 'destroy'])->name('solar-construction-sites.destroy');
     Route::get('/all-sites', [SolarConstructionSiteController::class, 'allSites'])->name('solar-construction-sites.all');
+    Route::post('/solar-construction-sites/{id}/update-status', [SolarConstructionSiteController::class, 'updateStatus'])->name('solar-sites.updateStatus');
+    Route::put('/solar-construction-sites/{id}/update-status', [SolarConstructionSiteController::class, 'updateStatus']);
 });
 
 // Solar Products & Services Routes
