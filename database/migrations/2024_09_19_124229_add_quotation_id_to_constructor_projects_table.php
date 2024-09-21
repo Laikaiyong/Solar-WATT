@@ -15,10 +15,7 @@ class AddQuotationIdToConstructorProjectsTable extends Migration
     {
         Schema::table('constructor_projects', function (Blueprint $table) {
             // Add the quotation_id column as a foreign key
-            $table->unsignedBigInteger('quotation_id')->after('id');
-
-            // Define the foreign key constraint
-            $table->foreign('quotation_id')
+            $table->unsignedBigInteger('quotation_id')->after('id')->foreign('quotation_id')
                   ->references('id')->on('constructor_quotations')
                   ->onDelete('cascade'); // Cascade delete projects if the quotation is deleted
         });

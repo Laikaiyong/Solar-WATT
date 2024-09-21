@@ -15,7 +15,7 @@ class AddForeignKeyToConstructorQuotationsTable extends Migration
     {
         Schema::table('constructor_quotations', function (Blueprint $table) {
             // Add the foreign key constraint with cascading deletes
-            $table->foreign('solar_site_id')
+            $table->unsignedBigInteger('solar_site_id')->after('constructor_id')->foreign('solar_site_id')
                 ->references('id')
                 ->on('solar_construction_sites')
                 ->onDelete('cascade');
