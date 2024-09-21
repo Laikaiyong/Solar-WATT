@@ -1,16 +1,24 @@
 import { useForm } from "@inertiajs/react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, Link } from "@inertiajs/react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 
 interface Feedback {
     id: number;
+    product_id: number;
     message: string;
 }
 
 interface EditProps {
     auth: any;
     feedbacks: Feedback;
+}
+
+interface Order {
+    id: number;
+    created_at: string;
+    total_amount: number;
 }
 
 export default function Edit({ auth, feedbacks }: EditProps) {
@@ -35,6 +43,23 @@ export default function Edit({ auth, feedbacks }: EditProps) {
             put(`/feedbacks/${feedbacks.id}`);
         }
     };
+
+    const [orders, setOrders] = useState<Order[]>([]); // Initialize as an empty array
+
+    // Fetch the user's orders when the component mounts
+    useEffect(() => {
+        const fetchOrders = async () => {
+            try {
+                const response = await axios.get("/get-user-orders");
+                setOrders(response.data.orders || []);
+            } catch (error) {
+                console.error("Failed to fetch orders", error);
+                setOrders([]);
+            }
+        };
+
+        fetchOrders();
+    }, []);
 
     return (
         <AuthenticatedLayout
@@ -64,6 +89,10 @@ export default function Edit({ auth, feedbacks }: EditProps) {
                             <form onSubmit={submit}>
                                 {/* Message */}
                                 <div className="mb-4">
+                                    <p className="text-gray-700 dark:text-gray-300">
+                                        Order ID: {orders.find(order => order.id === feedbacks.product_id)?.id} | 
+                                        Total Amount: {orders.find(order => order.id === feedbacks.product_id)?.total_amount}
+                                    </p>
                                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                         Message:
                                     </label>
