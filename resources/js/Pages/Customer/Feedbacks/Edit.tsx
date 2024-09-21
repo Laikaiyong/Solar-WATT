@@ -10,14 +10,14 @@ interface Feedback {
 
 interface EditProps {
     auth: any;
-    feedback: Feedback;
+    feedbacks: Feedback;
 }
 
-export default function Edit({ auth, feedback }: EditProps) {
+export default function Edit({ auth, feedbacks }: EditProps) {
     const [localErrors, setLocalErrors] = useState<any>({});
 
     const { data, setData, put } = useForm({
-        message: feedback.message,
+        message: feedbacks.message
     });
 
     const validate = () => {
@@ -32,7 +32,7 @@ export default function Edit({ auth, feedback }: EditProps) {
     const submit = (e: React.FormEvent) => {
         e.preventDefault();
         if (validate()) {
-            put(`/feedbacks/${feedback.id}`);
+            put(`/feedbacks/${feedbacks.id}`);
         }
     };
 

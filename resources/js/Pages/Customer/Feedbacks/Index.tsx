@@ -1,14 +1,23 @@
 import { Link, useForm } from "@inertiajs/react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head } from "@inertiajs/react";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 interface Feedback {
     id: number;
     message: string;
+    product_id: number;
     user: {
         id: number;
         name: string;
     };
+}
+
+interface Order {
+    id: number;
+    created_at: string;
+    total_amount: number;
 }
 
 export default function Index({
@@ -29,6 +38,23 @@ export default function Index({
             });
         }
     };
+
+    const [orders, setOrders] = useState<Order[]>([]); // Initialize as an empty array
+
+    // Fetch the user's orders when the component mounts
+    useEffect(() => {
+        const fetchOrders = async () => {
+            try {
+                const response = await axios.get("/get-user-orders");
+                setOrders(response.data.orders || []);
+            } catch (error) {
+                console.error("Failed to fetch orders", error);
+                setOrders([]);
+            }
+        };
+
+        fetchOrders();
+    }, []);
 
     return (
         <AuthenticatedLayout
@@ -60,7 +86,7 @@ export default function Index({
                                     <thead>
                                         <tr>
                                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                                User
+                                                Order
                                             </th>
                                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                                                 Message
@@ -73,7 +99,7 @@ export default function Index({
                                             <tr key={feedback.id}>
                                                 <td className="px-6 py-4 whitespace-nowrap">
                                                     <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                                                        {feedback.user.name}
+                                                        {"Order " + orders.find(order => order.id == feedback.product_id)?.id + " RM " + orders.find(order => order.id == feedback.product_id)?.total_amount}
                                                     </div>
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap">

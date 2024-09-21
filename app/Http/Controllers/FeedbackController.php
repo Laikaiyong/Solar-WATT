@@ -64,10 +64,10 @@ class FeedbackController extends Controller
     public function edit(string $id)
     {
         $feedback = Feedbacks::findOrFail($id);
-        $users = User::all(); 
+        // $users = User::all(); 
         return Inertia::render('Customer/Feedbacks/Edit', [
             'feedbacks' => $feedback,
-            'users' => $users,
+            // 'users' => $users,
         ]);
     }
 
@@ -77,7 +77,7 @@ class FeedbackController extends Controller
     public function update(Request $request, string $id)
     {
         $request->validate([
-            'user_id' => 'required|exists:users,id',
+            // 'user_id' => 'required|exists:users,id',
             'message' => 'required|string',
         ]);
 
