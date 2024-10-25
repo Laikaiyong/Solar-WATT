@@ -24,7 +24,7 @@ class AppServiceProvider extends ServiceProvider
         Xray::addSegment('BootApplication');
 
         // Example of logging to CloudWatch
-        \Log::channel('cloudwatch')->info('Application started');
+        \Log::info('Application started');
         Xray::endSegment('BootApplication');
     }
 }

@@ -78,12 +78,12 @@ class RegisteredUserController extends Controller
                 'PhoneNumber' => $user->phone_number,
             ]);
         } catch (AwsException $e) {
-            return response()->json(['message' => 'Registration successful, but SMS failed to send.'], 201);
+            // return response()->json(['message' => 'Registration successful, but SMS failed to send.'], 201);
         }
 
         Auth::login($user);
 
-        \Log::channel('cloudwatch')->info('User registered');
+        \Log::info('User registered');
         Xray::endSegment('Registration');
 
         return redirect(route('dashboard', absolute: false));
