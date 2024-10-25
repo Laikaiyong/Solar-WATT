@@ -124,6 +124,6 @@ return [
     ],
 
     // 'providers' => [
-    //     App\Providers\AwsServiceProvider::class,
+    //     Napp\Xray\XrayServiceProvider::class
     // ],
 ];

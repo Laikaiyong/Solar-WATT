@@ -15,12 +15,16 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/Components/ui/dropdown-menu";
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
 
 export default function Register() {
     const [position, setPosition] = useState("bottom");
+    const [phone, setPhone] = useState("");
     const { data, setData, post, processing, errors, reset } = useForm({
         name: "",
         email: "",
+        phone_number: "",
         role: "company",
         password: "",
         password_confirmation: "",
@@ -112,6 +116,25 @@ export default function Register() {
                     />
 
                     <InputError message={errors.email} className="mt-2" />
+                </div>
+                <div className="mt-4">
+                    <InputLabel htmlFor="phone" value="Phone" />
+
+                    <PhoneInput
+                        country="my"
+                        value={data.phone_number}
+                        onChange={(e) => setData("phone_number", e)}
+                        inputProps={{
+                            name: "phone",
+                            required: true,
+                            autoFocus: true,
+                        }}
+                    ></PhoneInput>
+
+                    <InputError
+                        message={errors.phone_number}
+                        className="mt-2"
+                    />
                 </div>
 
                 <div className="mt-4">

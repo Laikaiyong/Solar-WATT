@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Napp\Xray\Facades\Xray;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -17,8 +18,13 @@ class AppServiceProvider extends ServiceProvider
     /**
      * Bootstrap any application services.
      */
-    public function boot(): void
+    public function boot()
     {
-        //
+        // Configure X-Ray
+        Xray::addSegment('BootApplication');
+
+        // Example of logging to CloudWatch
+        \Log::channel('cloudwatch')->info('Application started');
+        Xray::endSegment('BootApplication');
     }
 }

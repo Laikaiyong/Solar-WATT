@@ -7,12 +7,18 @@
     "require": {
         "php": "^8.2",
         "aws/aws-sdk-php": "^3.321",
+        "bref/bref": "^2.3",
+        "bref/laravel-bridge": "^2.4",
+        "guzzlehttp/guzzle": "^7.9",
         "inertiajs/inertia-laravel": "^1.0",
         "laravel/breeze": "^2.1",
         "laravel/framework": "^11.9",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.9",
         "league/flysystem-aws-s3-v3": "^3.28",
+        "napp/xray-laravel": "*",
+        "pagevamp/laravel-cloudwatch-logs": "^1.1",
+        "pkerrigan/xray": "^1",
         "tightenco/ziggy": "^2.0"
     },
     "require-dev": {
@@ -62,9 +68,14 @@
         "optimize-autoloader": true,
         "preferred-install": "dist",
         "sort-packages": true,
+        "platform-check": false,
+        "platform": {
+            "php": "8.2.0"
+        },
         "allow-plugins": {
             "pestphp/pest-plugin": true,
-            "php-http/discovery": true
+            "php-http/discovery": true,
+            "tbachert/spi": true
         }
     },
     "minimum-stability": "stable",

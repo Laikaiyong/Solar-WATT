@@ -127,6 +127,23 @@ return [
             'path' => storage_path('logs/laravel.log'),
         ],
 
+        'cloudwatch' => [
+            'driver' => 'custom',
+            'name' => env('CLOUDWATCH_LOG_NAME', 'solarwatt'),
+            'region' => config('services.aws.region'),
+            'credentials' => [
+                'key' => config('services.aws.key'),
+                'secret' => config('services.aws.secret'),
+            ],
+            'stream_name' => env('CLOUDWATCH_LOG_STREAM_NAME', 'ApBoot'),
+            'retention' => env('CLOUDWATCH_LOG_RETENTION_DAYS', 14),
+            'group_name' => env('CLOUDWATCH_LOG_GROUP_NAME', 'solarwatt'),
+            'version' => env('CLOUDWATCH_LOG_VERSION', 'latest'),
+            'formatter' => \Monolog\Formatter\JsonFormatter::class,       
+            'batch_size' => env('CLOUDWATCH_LOG_BATCH_SIZE', 10000),    
+            'via' => \Pagevamp\Logger::class,
+        ],
+
     ],
 
 ];

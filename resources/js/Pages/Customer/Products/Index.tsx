@@ -183,7 +183,9 @@ export default function Index({
                                                 {product.name}
                                             </h3>
                                             <p className="text-sm text-gray-500 dark:text-gray-300 mt-2">
-                                                {product.description || "No description available."}
+                                                {
+                                                    
+                                                    product.description || "No description available."}
                                             </p>
                                             <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                                                 <strong>Type:</strong> {product.type}

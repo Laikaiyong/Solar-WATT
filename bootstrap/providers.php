@@ -3,4 +3,5 @@
 return [
     App\Providers\AppServiceProvider::class,
     App\Providers\AwsServiceProvider::class,
+    Napp\Xray\XrayServiceProvider::class,
 ];
